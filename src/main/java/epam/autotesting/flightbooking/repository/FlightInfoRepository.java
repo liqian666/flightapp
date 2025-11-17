@@ -4,6 +4,7 @@ import epam.autotesting.flightbooking.model.FlightInfo;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface FlightInfoRepository extends JpaRepository<FlightInfo, Long> {
     List<FlightInfo> findAll();
@@ -12,7 +13,7 @@ public interface FlightInfoRepository extends JpaRepository<FlightInfo, Long> {
                                                                 String departureDate);
 
     List<FlightInfo> findByOriginAndDestination(String origin, String destination);
-    FlightInfo findByFlightNumber(String flightNumber);
+    Optional<FlightInfo> findByFlightNumber(String flightNumber);
 
 
 }

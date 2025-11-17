@@ -1,11 +1,10 @@
 package epam.autotesting.flightbooking.controller;
 
-import epam.autotesting.flightbooking.helper.ApiResponse;
-import epam.autotesting.flightbooking.helper.ResponseCodes;
-import epam.autotesting.flightbooking.helper.ResponseHelper;
-import epam.autotesting.flightbooking.model.Baggage;
+import epam.autotesting.flightbooking.requestsresponses.ApiResponse;
+import epam.autotesting.flightbooking.requestsresponses.ResponseCodes;
+import epam.autotesting.flightbooking.requestsresponses.ResponseHelper;
 import epam.autotesting.flightbooking.model.Passenger;
-import epam.autotesting.flightbooking.requests.PassengerRequest;
+import epam.autotesting.flightbooking.requestsresponses.PassengerRequest;
 import epam.autotesting.flightbooking.services.BaggageService;
 import epam.autotesting.flightbooking.services.PassengerService;
 import org.slf4j.Logger;
@@ -14,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.Optional;
 
 

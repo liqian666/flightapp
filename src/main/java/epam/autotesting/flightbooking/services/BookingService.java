@@ -2,25 +2,22 @@ package epam.autotesting.flightbooking.services;
 
 import epam.autotesting.flightbooking.helper.BookingStatus;
 import epam.autotesting.flightbooking.helper.PaymentStatus;
-import epam.autotesting.flightbooking.model.Booking;
-import epam.autotesting.flightbooking.model.FlightInfo;
-import epam.autotesting.flightbooking.model.Passenger;
-import epam.autotesting.flightbooking.model.UserInfo;
+import epam.autotesting.flightbooking.model.*;
 import epam.autotesting.flightbooking.repository.BookingRepository;
 import epam.autotesting.flightbooking.repository.FlightInfoRepository;
 import epam.autotesting.flightbooking.repository.PassengerRepository;
 import epam.autotesting.flightbooking.repository.UserRepository;
-import epam.autotesting.flightbooking.requests.BookingRequest;
+import epam.autotesting.flightbooking.requestsresponses.BookingPassengerRequest;
+import epam.autotesting.flightbooking.requestsresponses.BookingRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class BookingService {
@@ -35,6 +32,8 @@ public class BookingService {
     private UserRepository userRepository;
     @Autowired
     private PassengerService passengerService;
+    @Autowired
+    private BaggageService baggageService;
 
     private static final Logger logger = LoggerFactory.getLogger(BookingService.class);
 
@@ -42,40 +41,83 @@ public class BookingService {
         return bookingRepository.findAll();
     }
 
-    public Booking getBookingById(Long id) {
-        return bookingRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Booking not found"));
-    }
-
-    public ResponseEntity<Booking> createBooking(BookingRequest request) {
+    public Booking createBooking(BookingRequest request) {
         /* To-do Validate flight and seat availability */
 
         String userId = request.getUserId();
-        UserInfo userInfo = userRepository.findByUserId(userId);
-        if (userInfo == null) {
-            return ResponseEntity.badRequest().build();
+        Optional<UserInfo> userInfo = userRepository.findByUserId(userId);
+        if(userInfo.isEmpty()) {
+            logger.error("User not found");
+            return null;
         }
+
         String flightNumber = request.getFlightNumber();
-        FlightInfo flightInfo = flightInfoRepository.findByFlightNumber(flightNumber);
-        if (flightInfo == null) {
-            return ResponseEntity.badRequest().build();
+        Optional<FlightInfo> flightInfo = flightInfoRepository.findByFlightNumber(flightNumber);
+        if(flightInfo.isEmpty()) {
+            logger.error("Flight not found");
+            return null;
         }
 
-        List<Passenger> passengers = request.getPassengers();
-        logger.error("Passengers {}", passengers);
+        List<BookingPassengerRequest> requestPassengers = request.getPassengers();
+        logger.info("Passengers size {}", requestPassengers.size());
+        logger.info("Passengers 1 IDNumber {}", requestPassengers.get(0).getIdNumber());
 
+        List<Passenger> passengerList = new ArrayList<>();
         List<String> seats = new ArrayList<>();
 
-        for(Passenger passenger : passengers) {
+        logger.info("preparing passenger information to be registered ");
+        for(BookingPassengerRequest passenger : requestPassengers) {
+            Passenger newPassenger = new Passenger();
 
-            passengerService.savePassenger(passenger);
+            newPassenger.setFirstName(passenger.getFirstName());
+            newPassenger.setLastName(passenger.getLastName());
+            newPassenger.setBirthday(passenger.getBirthday());
+            newPassenger.setIdType(passenger.getIdType());
+            newPassenger.setIdNumber(passenger.getIdNumber());
+            newPassenger.setSeatNumber(passenger.getSeatNumber());
+            newPassenger.setFlightNumber(flightNumber);
+            newPassenger.setBaggages(null);
+            Passenger savedPassenger = passengerService.savePassenger(newPassenger);
+            logger.info("Passenger saved without baggages successfully");
+
+
+            logger.info("Preparing baggage information for passenger");
+            List<Baggage> baggageList = new ArrayList<>();
+
+//            BaggageRequest baggageRequests = passenger.getBaggagesRequest();
+            List<Double> weights = passenger.getWeights();
+            logger.info("Requested Baggages size {} " , weights.size());
+
+            //add the baggage
+            for(Double baggageWeights : weights){
+                Baggage newBaggage = new Baggage();
+                newBaggage.setPassenger(savedPassenger);
+                newBaggage.setWeight(baggageWeights);
+                baggageList.add(newBaggage);
+                logger.info("Baggage added for passenger {} in baggageList", newBaggage.getPassenger().getPassengerId());
+            }
+            //save the baggages to the already saved passenger
+            logger.info("BaggageList size {} " , baggageList.size());
+            logger.info("trying to save baggage information");
+            baggageService.saveBaggages(baggageList);
+            logger.info("Baggages saved to passenger{}", savedPassenger.getPassengerId());
+
+            //update passenger with the baggages
+            savedPassenger.setBaggages(baggageList);
+            passengerService.savePassenger(savedPassenger);
+            logger.info("Passenger updated with the baggages", savedPassenger.getPassengerId());
+
+
+            passengerList.add(newPassenger);
             seats.add(passenger.getSeatNumber());
         }
 
 
+        logger.info("Processing Booking information");
+
         Booking booking = new Booking();
         booking.setUserId(userId);
-        booking.setFlightNumber(flightInfo.getFlightNumber());
+        booking.setFlightNumber(flightInfo.get().getFlightNumber());
         booking.setPassengers(null);
         booking.setSeats(seats);
         booking.setBookingStatus(BookingStatus.PENDING);
@@ -87,37 +129,44 @@ public class BookingService {
         logger.info("booking created with booking_id {}", savedbooking.getBookingId());
 
 
-        savedbooking.setPassengers(passengers);
+        savedbooking.setPassengers(passengerList);
         bookingRepository.save(savedbooking);
         logger.info("Booking created with passenger {} ", userId);
 
-         return ResponseEntity.status(HttpStatus.CREATED).body(savedbooking);
+         return savedbooking;
     }
 
-    public Booking confirmBooking(Long bookingId) {
-        Booking booking = getBookingById(bookingId);
-        if (booking != null) {
-            booking.setBookingStatus(BookingStatus.CONFIRMED);
-            booking.setPaymentStatus(PaymentStatus.PAID);
-            booking.setUpdatedAt(LocalDateTime.now());
-            return bookingRepository.save(booking);
+    public Optional<Booking> findBookingById(Long bookingId) {
+        return bookingRepository.findById(bookingId);
+    }
+
+    public Optional<Booking> confirmBooking(Long bookingId) {
+        Optional<Booking> booking = findBookingById(bookingId);
+        if (booking.isPresent()) {
+            Booking booking1 = booking.get();
+            booking1.setBookingStatus(BookingStatus.CONFIRMED);
+            booking1.setPaymentStatus(PaymentStatus.PAID);
+            booking1.setUpdatedAt(LocalDateTime.now());
+            return  Optional.of(bookingRepository.save(booking1));
         }
-        return null;
+        return Optional.empty();
     }
 
-    public Booking cancelBooking(Long bookingId) {
-        Booking booking = getBookingById(bookingId);
-        if (canCancel(booking)) {
-            booking.setBookingStatus(BookingStatus.CANCELLED);
-            if(booking.getPaymentStatus().equals(PaymentStatus.PAID)) {
-                booking.setPaymentStatus(PaymentStatus.REFOUND);
+    public Optional<Booking> cancelBooking(Long bookingId) {
+        Optional<Booking> booking = findBookingById(bookingId);
+        if(booking.isPresent()) {
+            Booking booking1 = booking.get();
+            if (canCancel(booking1)) {
+                booking1.setBookingStatus(BookingStatus.CANCELLED);
+                if(booking1.getPaymentStatus().equals(PaymentStatus.PAID)) {
+                    booking1.setPaymentStatus(PaymentStatus.REFOUND);
+                }
+                booking1.setSeats(null);
+                booking1.setUpdatedAt(LocalDateTime.now());
+                return Optional.of(bookingRepository.save(booking1));
             }
-            booking.setSeats(null);
-            booking.setUpdatedAt(LocalDateTime.now());
-            return bookingRepository.save(booking);
-        } else {
-            throw new IllegalStateException("Booking cannot be cancelled.");
         }
+        return Optional.empty();
     }
 
     private boolean canCancel(Booking booking) {

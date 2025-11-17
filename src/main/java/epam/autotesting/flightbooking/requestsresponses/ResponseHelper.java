@@ -1,4 +1,4 @@
-package epam.autotesting.flightbooking.helper;
+package epam.autotesting.flightbooking.requestsresponses;
 
 import org.springframework.http.ResponseEntity;
 

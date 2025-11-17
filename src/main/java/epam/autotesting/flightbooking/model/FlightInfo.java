@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 public class FlightInfo {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long flightId;
     private String flightNumber;
     private String origin;
     private String destination;
@@ -19,13 +19,14 @@ public class FlightInfo {
     private int seatsAvailable;
     private double price;
 
-    public Long getId() {
-        return id;
+    public Long getFlightId() {
+        return flightId;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setFlightId(Long flightId) {
+        this.flightId = flightId;
     }
+
     public String getFlightNumber() {
         return flightNumber;
     }

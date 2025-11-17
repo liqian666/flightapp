@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class UserService {
@@ -16,7 +17,7 @@ public class UserService {
         return userRepository.save(user);
     }
 
-    public UserInfo findUserById(String id) {
+    public Optional<UserInfo> findUserById(String id) {
         return userRepository.findByUserId(id);
     }
 

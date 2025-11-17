@@ -1,4 +1,4 @@
-package epam.autotesting.flightbooking.requests;
+package epam.autotesting.flightbooking.requestsresponses;
 
 import epam.autotesting.flightbooking.model.Passenger;
 
@@ -7,9 +7,10 @@ import java.util.List;
 public class BookingRequest {
     private String userId;
     private String flightNumber;
-    private List<Passenger> passengers;
+    private List<BookingPassengerRequest> passengers;
 
     public BookingRequest() {}
+
     public String getUserId() {
         return userId;
     }
@@ -26,11 +27,11 @@ public class BookingRequest {
         this.flightNumber = flightNumber;
     }
 
-    public List<Passenger> getPassengers() {
+    public List<BookingPassengerRequest> getPassengers() {
         return passengers;
     }
 
-    public void setPassengers(List<Passenger> passengers) {
+    public void setPassengers(List<BookingPassengerRequest> passengers) {
         this.passengers = passengers;
     }
 

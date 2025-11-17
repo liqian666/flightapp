@@ -1,4 +1,4 @@
-package epam.autotesting.flightbooking.requests;
+package epam.autotesting.flightbooking.requestsresponses;
 
 import epam.autotesting.flightbooking.helper.IDType;
 import jakarta.persistence.EnumType;
