@@ -1,5 +1,6 @@
 package epam.autotesting.flightbooking.services;
 
+import epam.autotesting.flightbooking.helper.IDType;
 import epam.autotesting.flightbooking.model.Passenger;
 import epam.autotesting.flightbooking.repository.PassengerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,13 +18,17 @@ public class PassengerService {
         return passengerRepository.findByPassengerId(passengerId);
     }
 
-    public Passenger findByFirstNameAndLastName(String firstName, String lastName) {
+    public Optional<Passenger> findByFirstNameAndLastName(String firstName, String lastName) {
         return passengerRepository.findByFirstNameAndLastName(firstName, lastName);
     }
 
     public Passenger savePassenger(Passenger passenger) {
         passenger.setIdNumber(passenger.getIdNumber());
         return passengerRepository.save(passenger);
+    }
+
+    public Optional<Passenger> findPassengerByIdTypeAndIdNumber(IDType idType, String idNumber) {
+        return passengerRepository.findByIdTypeAndIdNumber(idType,idNumber);
     }
 
 }

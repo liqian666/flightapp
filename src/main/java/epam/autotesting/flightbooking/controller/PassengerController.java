@@ -1,10 +1,9 @@
 package epam.autotesting.flightbooking.controller;
 
-import epam.autotesting.flightbooking.requestsresponses.ApiResponse;
-import epam.autotesting.flightbooking.requestsresponses.ResponseCodes;
-import epam.autotesting.flightbooking.requestsresponses.ResponseHelper;
+import epam.autotesting.flightbooking.helper.IDType;
+import epam.autotesting.flightbooking.model.Booking;
+import epam.autotesting.flightbooking.requestsresponses.*;
 import epam.autotesting.flightbooking.model.Passenger;
-import epam.autotesting.flightbooking.requestsresponses.PassengerRequest;
 import epam.autotesting.flightbooking.services.BaggageService;
 import epam.autotesting.flightbooking.services.PassengerService;
 import org.slf4j.Logger;
@@ -13,6 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 
@@ -22,32 +23,48 @@ public class PassengerController {
 
     @Autowired
     private PassengerService passengerService;
-    @Autowired
-    private BaggageService baggageservice;
 
 
     private static final Logger logger = LoggerFactory.getLogger(PassengerController.class);
 
-    @GetMapping("/passenger")
-    public ResponseEntity<Passenger> findPassenger(@RequestParam String firstName, String lastName) {
-
-        Passenger passenger =  passengerService.findByFirstNameAndLastName(firstName,lastName);
-
-        if (passenger != null) {
-            return ResponseEntity.ok(passenger);
+    @GetMapping("/name")
+    public ResponseEntity<ApiResponse> findPassenger(@RequestParam String firstName, String lastName) {
+        if(firstName==null || lastName==null) {
+            ResponseHelper.badRequest(ResponseCodes.NOT_ENOUGH_INFORMATION,"firstName or lastName is Empty","firstName:"+firstName+" lastName:"+lastName);
         }
-        return ResponseEntity.notFound().build();
+
+        return passengerService.findByFirstNameAndLastName(firstName,lastName)
+                .map(this::getPassengerResponseEntity)
+                .orElseGet(() -> ResponseHelper.badRequest(ResponseCodes.PASSENGER_NOT_FOUND,"Passenger not found", null));
     }
 
     @GetMapping("/id")
     public ResponseEntity<ApiResponse> searchByPassengerId(@RequestParam Long passengerId){
 
-        Optional<Passenger> passenger =  passengerService.findByPassengerId(passengerId);
-        if(passenger.isPresent()){
-            return ResponseHelper.success(ResponseCodes.SUCCESS,"find the passenger by passengerId",passenger);
+        return passengerService.findByPassengerId(passengerId)
+                .map(this::getPassengerResponseEntity)
+                .orElseGet(() -> ResponseHelper.badRequest(ResponseCodes.PASSENGER_NOT_FOUND,"Passenger not found", passengerId));
+
+    }
+
+    @GetMapping("/passengerIdType")
+    public ResponseEntity<ApiResponse> findUserById(@RequestParam String passengerIdType, @RequestParam String passengerIdNumber) {
+        if ((passengerIdType==null) || (passengerIdNumber == null)) {
+            return ResponseHelper.badRequest(ResponseCodes.USER_ID_EMPTY, "User IDType or User IDNumber is empty", "passengerIdType: "+passengerIdType+" passengerIdNumber: "+passengerIdNumber);
         }
 
-        return ResponseHelper.badRequest(ResponseCodes.PASSENGER_NOT_FOUND,"cannot find the passenger by passengerId",passengerId);
+        IDType idTypeEnum;
+        try {
+            idTypeEnum = IDType.valueOf(passengerIdType.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            return ResponseHelper.badRequest(ResponseCodes.USER_ID_EMPTY, "User IDTYPE should be one fo the following : PASSPORT,\n" +
+                    "    NATIONAL_ID,\n" +
+                    "    DRIVER_LICENSE", "UserIdType: "+passengerIdType+" UserIdNumber: "+passengerIdNumber);
+        }
+
+        return passengerService.findPassengerByIdTypeAndIdNumber(idTypeEnum, passengerIdNumber)
+                .map(this::getPassengerResponseEntity)
+                .orElseGet(() -> ResponseHelper.badRequest(ResponseCodes.PASSENGER_NOT_FOUND, "Passenger not found", "passengerIdType: "+passengerIdType+" passengerIdNumber: "+passengerIdNumber));
     }
 
     @PostMapping("/register")
@@ -70,5 +87,17 @@ public class PassengerController {
         passenger.setSeatNumber(passengerRequest.getSeatNumber());
         passenger.setFlightNumber(passengerRequest.getFlightNumber());
         return passenger;
+    }
+
+    private ResponseEntity<ApiResponse> getPassengerResponseEntity(Passenger foundPassenger) {
+        PassengerRequest passengerRequest = new PassengerRequest();
+        passengerRequest.setBirthday(foundPassenger.getBirthday());
+        passengerRequest.setFirstName(foundPassenger.getFirstName());
+        passengerRequest.setLastName(foundPassenger.getLastName());
+        passengerRequest.setIdType(foundPassenger.getIdType());
+        passengerRequest.setIdNumber(foundPassenger.getIdNumber());
+        passengerRequest.setSeatNumber(foundPassenger.getSeatNumber());
+        passengerRequest.setFlightNumber(foundPassenger.getFlightNumber());
+        return ResponseHelper.success(passengerRequest);
     }
 }
