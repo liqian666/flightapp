@@ -14,9 +14,11 @@ public class Payment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long paymentId;
     private Long bookingId;
-    private Long passengerId;
+//    private Long passengerId;
     private Double amount;
+    @Enumerated(EnumType.STRING)
     private PaymentStatus paymentStatus;
+    @Enumerated(EnumType.STRING)
     private PaymentMethod paymentMethod;
     private LocalDateTime transactionDate;
 
@@ -34,14 +36,6 @@ public class Payment {
 
     public void setBookingId(Long bookingId) {
         this.bookingId = bookingId;
-    }
-
-    public Long getPassengerId() {
-        return passengerId;
-    }
-
-    public void setPassengerId(Long passengerId) {
-        this.passengerId = passengerId;
     }
 
     public PaymentStatus getPaymentStatus() {

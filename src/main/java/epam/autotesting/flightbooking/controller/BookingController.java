@@ -22,7 +22,7 @@ public class BookingController {
 
     private static final Logger logger = LoggerFactory.getLogger(BookingController.class);
 
-    @PostMapping("/save")
+    @PostMapping("/create")
     public ResponseEntity<ApiResponse> createBooking(@RequestBody BookingRequest request) {
         if (request.getUserIdNumber()==null) {
             return ResponseHelper.badRequest(ResponseCodes.USER_ID_EMPTY,"Please fill in the User ID",null);

@@ -4,6 +4,7 @@ import epam.autotesting.flightbooking.model.Booking;
 import epam.autotesting.flightbooking.model.Passenger;
 import epam.autotesting.flightbooking.model.Payment;
 import epam.autotesting.flightbooking.requestsresponses.ApiResponse;
+import epam.autotesting.flightbooking.requestsresponses.PaymentRequest;
 import epam.autotesting.flightbooking.requestsresponses.ResponseCodes;
 import epam.autotesting.flightbooking.requestsresponses.ResponseHelper;
 import epam.autotesting.flightbooking.services.BookingService;
@@ -27,28 +28,28 @@ public class PaymentController
     PassengerService passengerService;
 
     @PostMapping("/pay")
-    public ResponseEntity<ApiResponse> processPayment(@RequestBody Payment payment)
+    public ResponseEntity<ApiResponse> processPayment(@RequestBody PaymentRequest paymentRequest)
     {
-        if((payment.getBookingId()!=null)&&(payment.getPassengerId()!=null))
-        {
-            Optional<Booking> booking = bookingService.findBookingById(payment.getBookingId());
-            if(booking.isEmpty()) {
-                return ResponseHelper.badRequest(ResponseCodes.BOOKING_NOT_FOUND,"No Booking found with this booking ID",payment.getBookingId());
-            }
-            Optional<Passenger> passenger = passengerService.findByPassengerId(payment.getPassengerId());
-            if(passenger.isEmpty()) {
-                return ResponseHelper.badRequest(ResponseCodes.BOOKING_NOT_FOUND,"No Booking found with this passenger ID",payment.getPassengerId());
-            }
-            Payment paidPayment = paymentService.processPaying(payment);
-            return ResponseHelper.success(paidPayment);
+        Long bookingId = paymentRequest.getBookingId();
+        if(bookingId == null){
+            return  ResponseHelper.badRequest(ResponseCodes.NOT_ENOUGH_INFORMATION,
+                    "Booking ID  is null",bookingId);
         }
-        else return ResponseHelper.badRequest(ResponseCodes.NOT_ENOUGH_INFORMATION,"Booking ID or Passenger ID is null",payment);
+
+        Optional<Booking> booking = bookingService.findBookingById(bookingId);
+        if(booking.isEmpty()) {
+            return ResponseHelper.badRequest(ResponseCodes.BOOKING_NOT_FOUND,
+                    "No Booking found with this booking ID",bookingId);
+        }
+        Payment paidPayment = paymentService.processPaying(paymentRequest);
+        return ResponseHelper.success(paidPayment);
     }
 
     @GetMapping("/{paymentId}")
     public ResponseEntity<ApiResponse> findByPaymentId(@PathVariable Long paymentId) {
         if (paymentId == null) {
-            return ResponseHelper.badRequest(ResponseCodes.PAYMENT_ID_EMPTY, "Payment Id is empty", null);
+            return ResponseHelper.badRequest(ResponseCodes.PAYMENT_ID_EMPTY,
+                    "Payment Id is empty", null);
         }
 
         return paymentService.findPaymentByPaymentId(paymentId)
