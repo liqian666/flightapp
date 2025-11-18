@@ -165,6 +165,7 @@ public class BookingService {
                 booking1.setUpdatedAt(LocalDateTime.now());
                 return Optional.of(bookingRepository.save(booking1));
             }
+            return Optional.empty();
         }
         return Optional.empty();
     }
@@ -174,7 +175,7 @@ public class BookingService {
             return true;
         }
         else if (booking.getBookingStatus().equals(BookingStatus.CONFIRMED)) {
-            return true;
+            return false;
         } else if(booking.getBookingStatus().equals(BookingStatus.CANCELLED)) {
             return false;
         }

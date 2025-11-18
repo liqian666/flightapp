@@ -20,6 +20,8 @@ public class ResponseCodes {
     public static final String BAGGAGE_NOT_FOUND = "BAGGAGE_NOT_FOUND";
 
     public static final String BOOKING_FAILED = "BOOKING_FAILED";
+    public static final String CANCEL_BOOKING_FAILED = "CANCEL_BOOKING_FAILED";
+    public static final String CONFIRM_BOOKING_FAILED = "CONFIRM_BOOKING_FAILED";
 
     // Bad Request errors (HTTP 400)
     public static final String FLIGHT_NUMBER_OR_PASSENGER_ID_ID_IS_NULL = "FLIGHT_NUMBER_OR_PASSENGER_ID_ID_IS_NULL";

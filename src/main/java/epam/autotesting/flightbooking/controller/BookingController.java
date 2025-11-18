@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/bookings")
@@ -32,25 +31,12 @@ public class BookingController {
          Booking savedBooking = bookingService.createBooking(request);
         logger.debug("Booking Created Successfully");
         if(savedBooking!=null) {
-            BookingResponse bookingResponse = new BookingResponse();
-            List<String> passengerIDNumbers = new ArrayList<>();
-            bookingResponse.setBookingStatus(savedBooking.getBookingStatus());
-//            bookingResponse.setPassengers(savedBooking.getPassengers());
-            for(Passenger passenger : savedBooking.getPassengers()) {
-                passengerIDNumbers.add(passenger.getIdNumber());
-            }
-            bookingResponse.setPassengersIdNumbers(passengerIDNumbers);
-            bookingResponse.setFlightNumber(savedBooking.getFlightNumber());
-            bookingResponse.setUserId(savedBooking.getUserId());
-            bookingResponse.setSeats(savedBooking.getSeats());
-            bookingResponse.setPaymentStatus(savedBooking.getPaymentStatus());
-            bookingResponse.setCreatedAt(savedBooking.getCreatedAt());
-            bookingResponse.setUpdatedAt(savedBooking.getUpdatedAt());
-
-            return ResponseHelper.success(bookingResponse);
+            return getBookingResponseEntity(savedBooking);
         }
         return ResponseHelper.badRequest(ResponseCodes.BOOKING_FAILED,"Booking failed", savedBooking);
+
     }
+
 
     @PostMapping("/{bookingId}/confirm")
     public ResponseEntity<ApiResponse> confirmBooking(@PathVariable Long bookingId) {
@@ -59,8 +45,8 @@ public class BookingController {
         }
 
         return bookingService.confirmBooking(bookingId)
-                .map(ResponseHelper::success)
-                .orElseGet(() -> ResponseHelper.badRequest(ResponseCodes.BOOKING_NOT_FOUND, "Booking not found", null));
+                .map(this::getBookingResponseEntity)
+                .orElseGet(() -> ResponseHelper.badRequest(ResponseCodes.CONFIRM_BOOKING_FAILED, "Failed to confirm the booking", null));
 
     }
 
@@ -71,18 +57,37 @@ public class BookingController {
         }
 
         return bookingService.findBookingById(bookingId)
-                .map(ResponseHelper::success)
+                .map(this::getBookingResponseEntity)
                 .orElseGet(() -> ResponseHelper.badRequest(ResponseCodes.BOOKING_NOT_FOUND, "Booking not found", null));
     }
 
     @PostMapping("/{bookingId}/cancel")
     public ResponseEntity<ApiResponse> cancelBooking(@PathVariable Long bookingId) {
-        if(bookingId==null){
-            return ResponseHelper.badRequest(ResponseCodes.BOOKING_ID_EMPTY,"Booking Id is empty",null);
+        if (bookingId == null) {
+            return ResponseHelper.badRequest(ResponseCodes.BOOKING_ID_EMPTY, "Booking Id is empty", null);
         }
 
         return bookingService.cancelBooking(bookingId)
-                .map(ResponseHelper::success)
-                .orElseGet(() -> ResponseHelper.badRequest(ResponseCodes.BOOKING_NOT_FOUND, "Booking not found", null));
+                .map(this::getBookingResponseEntity)
+                .orElseGet(() -> ResponseHelper.badRequest(ResponseCodes.CANCEL_BOOKING_FAILED, "Booking cannot be cancelled", null));
+    }
+
+
+    private ResponseEntity<ApiResponse> getBookingResponseEntity(Booking savedBooking) {
+        BookingResponse bookingResponse = new BookingResponse();
+        List<String> passengerIDNumbers = new ArrayList<>();
+        bookingResponse.setBookingStatus(savedBooking.getBookingStatus());
+        for(Passenger passenger : savedBooking.getPassengers()) {
+            passengerIDNumbers.add(passenger.getIdNumber());
+        }
+        bookingResponse.setPassengersIdNumbers(passengerIDNumbers);
+        bookingResponse.setFlightNumber(savedBooking.getFlightNumber());
+        bookingResponse.setUserId(savedBooking.getUserId());
+        bookingResponse.setSeats(savedBooking.getSeats());
+        bookingResponse.setPaymentStatus(savedBooking.getPaymentStatus());
+        bookingResponse.setCreatedAt(savedBooking.getCreatedAt());
+        bookingResponse.setUpdatedAt(savedBooking.getUpdatedAt());
+
+        return ResponseHelper.success(bookingResponse);
     }
 }
