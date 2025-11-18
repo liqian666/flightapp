@@ -5,18 +5,18 @@ import epam.autotesting.flightbooking.model.Passenger;
 import java.util.List;
 
 public class BookingRequest {
-    private String userId;
+    private String userIdNumber;
     private String flightNumber;
     private List<BookingPassengerRequest> passengers;
 
     public BookingRequest() {}
 
-    public String getUserId() {
-        return userId;
+    public String getUserIdNumber() {
+        return userIdNumber;
     }
 
-    public void setUserId(String userId) {
-        this.userId = userId;
+    public void setUserIdNumber(String userIdNumber) {
+        this.userIdNumber = userIdNumber;
     }
 
     public String getFlightNumber() {
@@ -38,7 +38,7 @@ public class BookingRequest {
     @Override
     public String toString() {
         return "BookingRequest{" +
-                "passengerId='" + userId + '\'' +
+                "passengerId='" + userIdNumber + '\'' +
                 ", flightNumber='" + flightNumber + '\'' +
                 '}';
     }

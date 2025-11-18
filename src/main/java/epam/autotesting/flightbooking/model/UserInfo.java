@@ -8,7 +8,7 @@ import jakarta.persistence.*;
 public class UserInfo {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long userId;
     private String userName;
     private String firstName;
     private String lastName;
@@ -16,7 +16,7 @@ public class UserInfo {
     private String email;
     @Enumerated(EnumType.STRING)
     private IDType idType;
-    private String userId;
+    private String idNumber;
 
     public String getUserName() {
         return userName;
@@ -66,11 +66,11 @@ public class UserInfo {
         this.idType = idType;
     }
 
-    public String getUserId() {
-        return userId;
+    public String getIdNumber() {
+        return idNumber;
     }
 
-    public void setUserId(String userId) {
-        this.userId = userId;
+    public void setIdNumber(String idNumber) {
+        this.idNumber = idNumber;
     }
 }

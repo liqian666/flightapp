@@ -4,6 +4,3 @@ INSERT INTO flight_info (flight_number, origin, destination, departure_date, dep
 ('CD456', 'AAA', 'BBB', '2025-11-10', '2025-11-11T04:00:00', '2025-11-11T11:00:00', 3, 199.99),
 ('CD789', 'AAA', 'BBB', '2025-11-10', '2025-11-11T09:00:00', '2025-11-11T13:00:00', 5, 199.99);
 
-
-INSERT INTO user_info (user_name, first_name, last_name, password, email, id_type, user_id) VALUES
-('Jd', 'John', 'Doe', 'password123', 'john.doe@example.com','PASSPORT', 'P123456');

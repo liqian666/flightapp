@@ -1,5 +1,6 @@
 package epam.autotesting.flightbooking.services;
 
+import epam.autotesting.flightbooking.helper.IDType;
 import epam.autotesting.flightbooking.model.UserInfo;
 import epam.autotesting.flightbooking.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,8 +18,8 @@ public class UserService {
         return userRepository.save(user);
     }
 
-    public Optional<UserInfo> findUserById(String id) {
-        return userRepository.findByUserId(id);
+    public Optional<UserInfo> findUserByIdTypeAndIdNumber(IDType idType, String idNumber) {
+        return userRepository.findByIdTypeAndIdNumber(idType,idNumber);
     }
 
     public List<UserInfo> findAllUsers() {

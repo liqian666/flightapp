@@ -24,7 +24,7 @@ public class BookingController {
 
     @PostMapping("/save")
     public ResponseEntity<ApiResponse> createBooking(@RequestBody BookingRequest request) {
-        if (request.getUserId()==null) {
+        if (request.getUserIdNumber()==null) {
             return ResponseHelper.badRequest(ResponseCodes.USER_ID_EMPTY,"Please fill in the User ID",null);
         }
         logger.debug("Creating booking");

@@ -1,5 +1,6 @@
 package epam.autotesting.flightbooking.controller;
 
+import epam.autotesting.flightbooking.helper.IDType;
 import epam.autotesting.flightbooking.model.UserInfo;
 import epam.autotesting.flightbooking.requestsresponses.ApiResponse;
 import epam.autotesting.flightbooking.requestsresponses.ResponseCodes;
@@ -20,7 +21,7 @@ public class UserController {
 
     @PostMapping("register")
     public ResponseEntity<ApiResponse> register(@RequestBody UserInfo userInfo) {
-        if (userInfo.getUserName() == null || userInfo.getPassword() == null || userInfo.getUserId() == null) {
+        if (userInfo.getUserName() == null || userInfo.getPassword() == null || userInfo.getIdType() == null || userInfo.getIdNumber() == null) {
             throw new IllegalArgumentException("User has null field(s): username, password, or userId");
         }
         else {
@@ -29,7 +30,7 @@ public class UserController {
         }
     }
 
-    @GetMapping
+    @GetMapping("/login")
     public ResponseEntity<ApiResponse> login(@RequestParam String username, @RequestParam String password) {
         List<UserInfo> usersInfo = userService.findAllUsers();
         UserInfo userInfo =  usersInfo.stream()
@@ -41,19 +42,28 @@ public class UserController {
             return ResponseHelper.success(userInfo);
         }
         else{
-            return ResponseEntity.notFound().build();
+            return ResponseHelper.badRequest(ResponseCodes.USER_NOT_FOUND,"User name or password is wrong","username: "+username+" password: "+password);
         }
     }
 
     @GetMapping("/{userId}")
-    public ResponseEntity<ApiResponse> findUserById(@PathVariable String userId) {
-        if (userId == null) {
-            return ResponseHelper.badRequest(ResponseCodes.USER_ID_EMPTY, "Payment Id is empty", null);
+    public ResponseEntity<ApiResponse> findUserById(@RequestParam String userIdType, @RequestParam String userIdNumber) {
+        if ((userIdType==null) || (userIdNumber == null)) {
+            return ResponseHelper.badRequest(ResponseCodes.USER_ID_EMPTY, "User IDType or User IDNumber is empty", "UserIdType: "+userIdType+" UserIdNumber: "+userIdNumber);
         }
 
-        return userService.findUserById(userId)
+        IDType idTypeEnum;
+        try {
+            idTypeEnum = IDType.valueOf(userIdType.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            return ResponseHelper.badRequest(ResponseCodes.USER_ID_EMPTY, "User IDTYPE should be one fo the following : PASSPORT,\n" +
+                    "    NATIONAL_ID,\n" +
+                    "    DRIVER_LICENSE", "UserIdType: "+userIdType+" UserIdNumber: "+userIdNumber);
+        }
+
+        return userService.findUserByIdTypeAndIdNumber(idTypeEnum, userIdNumber)
                 .map(ResponseHelper::success)
-                .orElseGet(() -> ResponseHelper.badRequest(ResponseCodes.USER_NOT_FOUND, "Payment not found", userId));
+                .orElseGet(() -> ResponseHelper.badRequest(ResponseCodes.USER_NOT_FOUND, "User not found", "UserIdType: "+userIdType+" UserIdNumber: "+userIdNumber));
     }
 
 }

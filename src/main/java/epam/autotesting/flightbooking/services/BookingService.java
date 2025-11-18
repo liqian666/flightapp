@@ -44,8 +44,8 @@ public class BookingService {
     public Booking createBooking(BookingRequest request) {
         /* To-do Validate flight and seat availability */
 
-        String userId = request.getUserId();
-        Optional<UserInfo> userInfo = userRepository.findByUserId(userId);
+        String userIdNumber = request.getUserIdNumber();
+        Optional<UserInfo> userInfo = userRepository.findByIdNumber(userIdNumber);
         if(userInfo.isEmpty()) {
             logger.error("User not found");
             return null;
@@ -84,7 +84,6 @@ public class BookingService {
             logger.info("Preparing baggage information for passenger");
             List<Baggage> baggageList = new ArrayList<>();
 
-//            BaggageRequest baggageRequests = passenger.getBaggagesRequest();
             List<Double> weights = passenger.getWeights();
             logger.info("Requested Baggages size {} " , weights.size());
 
@@ -116,7 +115,7 @@ public class BookingService {
         logger.info("Processing Booking information");
 
         Booking booking = new Booking();
-        booking.setUserId(userId);
+        booking.setUserId(userIdNumber);
         booking.setFlightNumber(flightInfo.get().getFlightNumber());
         booking.setPassengers(null);
         booking.setSeats(seats);
@@ -131,7 +130,7 @@ public class BookingService {
 
         savedbooking.setPassengers(passengerList);
         bookingRepository.save(savedbooking);
-        logger.info("Booking created with passenger {} ", userId);
+        logger.info("Booking created with passenger {} ", userIdNumber);
 
          return savedbooking;
     }
