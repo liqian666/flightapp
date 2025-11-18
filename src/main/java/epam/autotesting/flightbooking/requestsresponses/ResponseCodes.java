@@ -26,4 +26,5 @@ public class ResponseCodes {
     // Bad Request errors (HTTP 400)
     public static final String FLIGHT_NUMBER_OR_PASSENGER_ID_ID_IS_NULL = "FLIGHT_NUMBER_OR_PASSENGER_ID_ID_IS_NULL";
     public static final String PASSENGER_NOT_FOUND = "PASSENGER_NOT_FOUND";
+    public static final String FLIGHT_NOT_FOUND = "FLIGHT_NOT_FOUND";
 }
