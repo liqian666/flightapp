@@ -1,9 +1,12 @@
 package epam.autotesting.flightbooking.requestsresponses;
 
+import epam.autotesting.flightbooking.helper.BaggageType;
+import epam.autotesting.flightbooking.model.Baggage;
+
 import java.util.List;
 
 public class BaggageResponse {
-    private List<Double> weight;
+    private List<BaggageType> baggageTypeList;
     private Long passengerId;
 
     public Long getPassengerId() {
@@ -14,11 +17,11 @@ public class BaggageResponse {
         this.passengerId = passengerId;
     }
 
-    public List<Double> getWeight() {
-        return weight;
+    public List<BaggageType> getBaggageTypeList() {
+        return baggageTypeList;
     }
 
-    public void setWeight(List<Double> weight) {
-        this.weight = weight;
+    public void setBaggageTypeList(List<BaggageType> baggageTypeList) {
+        this.baggageTypeList = baggageTypeList;
     }
 }

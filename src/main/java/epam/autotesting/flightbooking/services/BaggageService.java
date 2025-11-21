@@ -22,25 +22,6 @@ public class BaggageService {
 
     private static final Logger logger = LoggerFactory.getLogger(BaggageService.class);
 
-//    public Baggage saveBaggage(Baggage baggage) {
-//
-//        //get the already exist baggages of the passenger
-//        Passenger passenger = baggage.getPassenger();
-//        Double weight = baggage.getWeight();
-//        List<Baggage> baggages = passenger.getBaggages();
-//
-//        //add the new baggage
-//        Baggage newBaggage = new Baggage();
-//        newBaggage.setWeight(weight);
-//        newBaggage.setPassenger(passenger);
-//        Baggage savedBaggage = baggageRepository.save(newBaggage);
-//
-//        //update the passenger with the baggages
-//        baggages.add(savedBaggage);
-//        passenger.setBaggages(baggages);
-//        passengerRepository.save(passenger);
-//        return savedBaggage;
-//    }
 
     public List<Baggage> saveBaggages(List<Baggage> toBeSavedBaggages) {
 
@@ -60,7 +41,7 @@ public class BaggageService {
 
         List<Baggage> baggagesList = new ArrayList<>();
         for (Baggage baggage : toBeSavedBaggages) {
-            logger.info("baggage weight is {}", baggage.getWeight());
+            logger.info("baggage weight is {}", baggage.getBaggageType());
             Baggage savedBaggage = baggageRepository.save(baggage);
             baggagesList.add(savedBaggage);
         }
@@ -68,7 +49,7 @@ public class BaggageService {
         logger.info("baggages saved {}", baggagesList.size());
 
         for(Baggage baggage : baggagesList){
-            logger.info("baggage weight is {}", baggage.getWeight());
+            logger.info("baggage weight is {}", baggage.getBaggageType());
         }
 
         //udpate the passenger with new baggages

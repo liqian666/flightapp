@@ -1,6 +1,7 @@
 package epam.autotesting.flightbooking.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import epam.autotesting.flightbooking.helper.BaggageType;
 import jakarta.persistence.*;
 
 @Entity
@@ -9,7 +10,8 @@ public class Baggage {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private Double weight;
+    @Enumerated(EnumType.STRING)
+    private BaggageType baggageType;
     @ManyToOne
     @JoinColumn(name = "passenger_id")
     private Passenger passenger;
@@ -31,19 +33,19 @@ public class Baggage {
         this.id = id;
     }
 
-    public Double getWeight() {
-        return weight;
+    public BaggageType getBaggageType() {
+        return baggageType;
     }
 
-    public void setWeight(Double weight) {
-        this.weight = weight;
+    public void setBaggageType(BaggageType baggageType) {
+        this.baggageType = baggageType;
     }
 
     @Override
     public String toString() {
         return "Baggage{" +
                 "id=" + id +
-                ", weight=" + weight +
+                ", weight=" + baggageType +
                 ", passengerId=" + (passenger != null ? passenger.getPassengerId() : null) +
                 '}';
     }

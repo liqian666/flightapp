@@ -1,5 +1,6 @@
 package epam.autotesting.flightbooking.requestsresponses;
 
+import epam.autotesting.flightbooking.helper.BaggageType;
 import epam.autotesting.flightbooking.helper.IDType;
 import epam.autotesting.flightbooking.model.Baggage;
 import jakarta.persistence.EnumType;
@@ -18,7 +19,7 @@ public class BookingPassengerRequest {
     private String idNumber;
 
     private String seatNumber;
-    private List<Double> weights;
+    private List<BaggageType> baggageTypes;
 
     public String getFirstName() {
         return firstName;
@@ -68,11 +69,11 @@ public class BookingPassengerRequest {
         this.seatNumber = seatNumber;
     }
 
-    public List<Double> getWeights() {
-        return weights;
+    public List<BaggageType> getBaggageTypes() {
+        return baggageTypes;
     }
 
-    public void setWeights(List<Double> weights) {
-        this.weights = weights;
+    public void setBaggageTypes(List<BaggageType> baggageTypes) {
+        this.baggageTypes = baggageTypes;
     }
 }

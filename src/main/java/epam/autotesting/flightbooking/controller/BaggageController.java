@@ -1,5 +1,6 @@
 package epam.autotesting.flightbooking.controller;
 
+import epam.autotesting.flightbooking.helper.BaggageType;
 import epam.autotesting.flightbooking.requestsresponses.*;
 import epam.autotesting.flightbooking.model.Baggage;
 import epam.autotesting.flightbooking.model.Passenger;
@@ -26,7 +27,7 @@ public class BaggageController {
     private static final Logger logger = LoggerFactory.getLogger(BaggageController.class);
 
     @PostMapping("/add")
-    public ResponseEntity<ApiResponse> addBaggages(@RequestBody List<Double> weights, @RequestParam Long passengerId) {
+    public ResponseEntity<ApiResponse> addBaggages(@RequestBody List<BaggageType> baggageTypes, @RequestParam Long passengerId) {
 
         if(passengerId==null){
             return ResponseHelper.badRequest(ResponseCodes.PASSENGER_NOT_FOUND,"PassengerId is empty",  null);
@@ -35,24 +36,24 @@ public class BaggageController {
         Optional<Passenger> passenger = passengerService.findByPassengerId(passengerId);
         if(passenger.isPresent()){
             List<Baggage> baggageList = new ArrayList();
-            for(Double weight : weights){
-                logger.info("Adding baggage with weight {} ", weight);
+            for(BaggageType baggageType : baggageTypes){
+                logger.info("Adding baggage with  {} ", baggageType);
                 Baggage baggage = new Baggage();
-                baggage.setWeight(weight);
+                baggage.setBaggageType(baggageType);
                 baggage.setPassenger(passenger.get());
 
                 baggageList.add(baggage);
             }
 
             List<Baggage> savedBaggageList = baggageService.saveBaggages(baggageList);
-            List<Double>  baggageWeights = new ArrayList<>();
+            List<BaggageType>  baggageTypeList = new ArrayList<>();
             BaggageResponse baggageResponse = new BaggageResponse();
             baggageResponse.setPassengerId(passengerId);
-            for (Baggage SavedBaggage : savedBaggageList) {
-                logger.info("Saving baggage with id {} ", SavedBaggage.getId());
-                baggageWeights.add(SavedBaggage.getWeight());
+            for (Baggage savedBaggage : savedBaggageList) {
+                logger.info("Saving baggage with id {} ", savedBaggage.getId());
+                baggageTypeList.add(savedBaggage.getBaggageType());
             }
-            baggageResponse.setWeight(baggageWeights);
+            baggageResponse.setBaggageTypeList(baggageTypeList);
             return ResponseHelper.success(baggageResponse);
         }
         else
@@ -64,18 +65,17 @@ public class BaggageController {
     public ResponseEntity<ApiResponse> searchByPassengerId(@RequestParam Long passengerId) {
 
         List<Baggage> baggages = baggageService.findBaggageByPassengerId(passengerId);
-        if (!baggages.isEmpty()) {
+        if (baggages!=null) {
             logger.info("baggages found {} ",baggages);
             BaggageResponse baggageResponse = new BaggageResponse();
             baggageResponse.setPassengerId(passengerId);
-            List<Double> baggageWeights = new ArrayList<>();
+            List<BaggageType> baggageTypes = new ArrayList<>();
             for (Baggage baggage : baggages) {
-                baggageWeights.add(baggage.getWeight());
+                baggageTypes.add(baggage.getBaggageType());
 
             }
-            baggageResponse.setWeight(baggageWeights);
+            baggageResponse.setBaggageTypeList(baggageTypes);
             return ResponseHelper.success(baggageResponse);
-
         }
         logger.info("did not found baggages ");
         return ResponseHelper.badRequest(ResponseCodes.BAGGAGE_NOT_FOUND, "Passenger doesn't have baggage", passengerId);

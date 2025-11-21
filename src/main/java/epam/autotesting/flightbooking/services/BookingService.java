@@ -1,5 +1,6 @@
 package epam.autotesting.flightbooking.services;
 
+import epam.autotesting.flightbooking.helper.BaggageType;
 import epam.autotesting.flightbooking.helper.BookingStatus;
 import epam.autotesting.flightbooking.helper.PaymentStatus;
 import epam.autotesting.flightbooking.model.*;
@@ -94,14 +95,14 @@ public class BookingService {
             logger.info("Preparing baggage information for passenger");
             List<Baggage> baggageList = new ArrayList<>();
 
-            List<Double> weights = passenger.getWeights();
-            logger.info("Requested Baggages size {} " , weights.size());
+            List<BaggageType> baggageTypeList = passenger.getBaggageTypes();
+            logger.info("Requested Baggages size {} " , baggageTypeList.size());
 
             //add the baggage
-            for(Double baggageWeights : weights){
+            for(BaggageType baggageTypes : baggageTypeList){
                 Baggage newBaggage = new Baggage();
                 newBaggage.setPassenger(savedPassenger);
-                newBaggage.setWeight(baggageWeights);
+                newBaggage.setBaggageType(baggageTypes);
                 baggageList.add(newBaggage);
                 logger.info("Baggage added for passenger {} in baggageList", newBaggage.getPassenger().getPassengerId());
             }
