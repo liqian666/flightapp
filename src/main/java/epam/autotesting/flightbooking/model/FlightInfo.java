@@ -3,6 +3,7 @@ package epam.autotesting.flightbooking.model;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(name = "flight_info")
@@ -18,6 +19,9 @@ public class FlightInfo {
     private LocalDateTime arrivalTime;
     private int seatsAvailable;
     private double price;
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "flight_id")
+    private List<Seat> seats;
 
     public Long getFlightId() {
         return flightId;
@@ -89,5 +93,13 @@ public class FlightInfo {
 
     public void setPrice(double price) {
         this.price = price;
+    }
+
+    public List<Seat> getSeats() {
+        return seats;
+    }
+
+    public void setSeats(List<Seat> seats) {
+        this.seats = seats;
     }
 }

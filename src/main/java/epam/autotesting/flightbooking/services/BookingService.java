@@ -34,6 +34,8 @@ public class BookingService {
     private PassengerService passengerService;
     @Autowired
     private BaggageService baggageService;
+    @Autowired
+    private SeatService seatService;
 
     private static final Logger logger = LoggerFactory.getLogger(BookingService.class);
 
@@ -67,6 +69,14 @@ public class BookingService {
 
         logger.info("preparing passenger information to be registered ");
         for(BookingPassengerRequest passenger : requestPassengers) {
+
+            //check seat available or not
+            if(!seatService.isSeatAvailable(flightNumber,passenger.getSeatNumber())){
+
+            }
+
+
+
             Passenger newPassenger = new Passenger();
 
             newPassenger.setFirstName(passenger.getFirstName());
@@ -104,12 +114,14 @@ public class BookingService {
             //update passenger with the baggages
             savedPassenger.setBaggages(baggageList);
             passengerService.savePassenger(savedPassenger);
-            logger.info("Passenger updated with the baggages", savedPassenger.getPassengerId());
+            logger.info("Passenger updated with the baggages {}", savedPassenger.getPassengerId());
 
 
             passengerList.add(newPassenger);
             seats.add(passenger.getSeatNumber());
         }
+
+        //book seats in flight
 
 
         logger.info("Processing Booking information");
@@ -144,7 +156,6 @@ public class BookingService {
         if (booking.isPresent()) {
             Booking booking1 = booking.get();
             booking1.setBookingStatus(BookingStatus.CONFIRMED);
-            booking1.setPaymentStatus(PaymentStatus.PAID);
             booking1.setUpdatedAt(LocalDateTime.now());
             return  Optional.of(bookingRepository.save(booking1));
         }

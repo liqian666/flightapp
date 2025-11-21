@@ -31,4 +31,8 @@ public class PassengerService {
         return passengerRepository.findByIdTypeAndIdNumber(idType,idNumber);
     }
 
+    public Optional<Passenger> findPassengerByIdNumber(String idNumber) {
+        return passengerRepository.findByIdNumber(idNumber);
+    }
+
 }

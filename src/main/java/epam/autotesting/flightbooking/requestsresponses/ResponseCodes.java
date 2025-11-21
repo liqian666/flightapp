@@ -27,4 +27,7 @@ public class ResponseCodes {
     public static final String FLIGHT_NUMBER_OR_PASSENGER_ID_ID_IS_NULL = "FLIGHT_NUMBER_OR_PASSENGER_ID_ID_IS_NULL";
     public static final String PASSENGER_NOT_FOUND = "PASSENGER_NOT_FOUND";
     public static final String FLIGHT_NOT_FOUND = "FLIGHT_NOT_FOUND";
+
+    public static final String NO_AVAILABLE_SEATS = "NO_AVAILABLE_SEATS";
+    public static final String SEAT_NUMBER_IS_EMPTY = "SEAT_NUMBER_IS_EMPTY";
 }

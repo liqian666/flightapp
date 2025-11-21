@@ -11,5 +11,6 @@ public interface PassengerRepository extends JpaRepository<Passenger, Long> {
     public Optional<Passenger> findByPassengerId(Long passengerId);
     public Optional<Passenger> findByFirstNameAndLastName(String firstName, String lastName);
     public Optional<Passenger> findByIdTypeAndIdNumber(IDType idType, String idNumber);
+    public Optional<Passenger> findByIdNumber(String idNumber);
     public Passenger save(Passenger passenger);
 }

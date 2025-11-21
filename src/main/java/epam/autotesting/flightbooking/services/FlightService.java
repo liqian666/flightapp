@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class FlightService {
@@ -45,7 +46,7 @@ public class FlightService {
 
 
 
-    public List<FlightInfo> searchByOriginAndDestination(String origin, String destination) {
-        return flightInfoRepository.findByOriginAndDestination(origin, destination);
+    public Optional<FlightInfo> searchFlightByFlightNumber(String flightNumber) {
+        return flightInfoRepository.findByFlightNumber(flightNumber);
     }
 }

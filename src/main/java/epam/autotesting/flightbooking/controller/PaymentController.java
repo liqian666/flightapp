@@ -35,13 +35,11 @@ public class PaymentController
             return  ResponseHelper.badRequest(ResponseCodes.NOT_ENOUGH_INFORMATION,
                     "Booking ID  is null",bookingId);
         }
-
-        Optional<Booking> booking = bookingService.findBookingById(bookingId);
-        if(booking.isEmpty()) {
+        Payment paidPayment = paymentService.processPaying(paymentRequest);
+        if(paidPayment == null) {
             return ResponseHelper.badRequest(ResponseCodes.BOOKING_NOT_FOUND,
                     "No Booking found with this booking ID",bookingId);
         }
-        Payment paidPayment = paymentService.processPaying(paymentRequest);
         return ResponseHelper.success(paidPayment);
     }
 

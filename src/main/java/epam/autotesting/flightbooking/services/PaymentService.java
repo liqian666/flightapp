@@ -7,6 +7,8 @@ import epam.autotesting.flightbooking.model.Payment;
 import epam.autotesting.flightbooking.repository.BookingRepository;
 import epam.autotesting.flightbooking.repository.PaymentRepository;
 import epam.autotesting.flightbooking.requestsresponses.PaymentRequest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -21,8 +23,14 @@ public class PaymentService {
     @Autowired
     BookingRepository bookingRepository;
 
+    private static final Logger logger = LoggerFactory.getLogger(PaymentService.class);
+
     public Payment processPaying(PaymentRequest paymentRequest){
+
+
         Long bookingId = paymentRequest.getBookingId();
+
+        logger.info("bookingId:"+bookingId);
         Booking booking = bookingRepository.findById(bookingId).orElse(null);
         Payment payment = new Payment();
         if(booking !=null){
@@ -38,7 +46,6 @@ public class PaymentService {
                 payment.setPaymentMethod(paymentRequest.getPaymentMethod());
                 payment.setAmount(paymentRequest.getAmount());
                 return paymentRepository.save(payment);
-
             }
         }
         return null;
