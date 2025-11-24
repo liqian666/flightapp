@@ -4,6 +4,7 @@ import epam.autotesting.flightbooking.helper.BookingStatus;
 import epam.autotesting.flightbooking.helper.PaymentStatus;
 import jakarta.persistence.*;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -15,6 +16,7 @@ public class Booking {
     private Long bookingId;
     private String userId;
     private String flightNumber;
+    private String returnFlightNumber;
     @Enumerated(EnumType.STRING)
     private PaymentStatus paymentStatus;
     @Enumerated(EnumType.STRING)
@@ -23,6 +25,8 @@ public class Booking {
     @JoinColumn(name = "booking_id")
     private List<Passenger> passengers;
     private List<String> seats;
+    private LocalDate departureDate;
+    private LocalDate returnDate;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
@@ -96,5 +100,29 @@ public class Booking {
 
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public LocalDate getDepartureDate() {
+        return departureDate;
+    }
+
+    public void setDepartureDate(LocalDate departureDate) {
+        this.departureDate = departureDate;
+    }
+
+    public LocalDate getReturnDate() {
+        return returnDate;
+    }
+
+    public void setReturnDate(LocalDate returnDate) {
+        this.returnDate = returnDate;
+    }
+
+    public String getReturnFlightNumber() {
+        return returnFlightNumber;
+    }
+
+    public void setReturnFlightNumber(String returnFlightNumber) {
+        this.returnFlightNumber = returnFlightNumber;
     }
 }

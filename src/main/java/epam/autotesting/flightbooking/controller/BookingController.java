@@ -4,6 +4,8 @@ import epam.autotesting.flightbooking.model.Passenger;
 import epam.autotesting.flightbooking.requestsresponses.*;
 import epam.autotesting.flightbooking.model.Booking;
 import epam.autotesting.flightbooking.services.BookingService;
+import epam.autotesting.flightbooking.services.FlightService;
+import epam.autotesting.flightbooking.services.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/bookings")
@@ -19,24 +22,69 @@ public class BookingController {
 
     @Autowired
     BookingService bookingService;
+    @Autowired
+    UserService userService;
+    @Autowired
+    FlightService flightService;
 
     private static final Logger logger = LoggerFactory.getLogger(BookingController.class);
 
-    @PostMapping("/create")
-    public ResponseEntity<ApiResponse> createBooking(@RequestBody BookingRequest request) {
-        if (request.getUserIdNumber()==null) {
-            return ResponseHelper.badRequest(ResponseCodes.USER_ID_EMPTY,"Please fill in the User ID",null);
+    @PostMapping("/oneway")
+    public ResponseEntity<ApiResponse> oneWayBooking(@RequestBody BookingOneWayRequest request) {
+        if(userNotFound(request.getUserIdNumber())) {
+            return ResponseHelper.badRequest(ResponseCodes.USER_NOT_FOUND,
+                    "User not found with this UserID",request.getFlightNumber());
         }
-        logger.debug("Creating booking");
+
+        if(flightNotFound(request.getFlightNumber())) {
+            return ResponseHelper.badRequest(ResponseCodes.FLIGHT_NOT_FOUND,
+                    "Flight not found with this FlightNumber",request.getFlightNumber());
+        }
+
          Booking savedBooking = bookingService.createBooking(request);
-        logger.debug("Booking Created Successfully");
+
         if(savedBooking!=null) {
-            return getBookingResponseEntity(savedBooking);
+            return getBookingResponseEntity(savedBooking, new BookingResponse());
         }
-        return ResponseHelper.badRequest(ResponseCodes.BOOKING_FAILED,"Booking failed", savedBooking);
+        return ResponseHelper.badRequest(ResponseCodes.BOOKING_FAILED,"Booking failed", request);
 
     }
 
+    @PostMapping("/twoway")
+    public ResponseEntity<ApiResponse> twoWayBooking(@RequestBody BookingTwoWayRequest request) {
+
+        if(userNotFound(request.getUserIdNumber())) {
+            return ResponseHelper.badRequest(ResponseCodes.USER_NOT_FOUND,
+                    "User not found with this UserID",request.getFlightNumber());
+        }
+
+        if(flightNotFound(request.getFlightNumber())) {
+            return ResponseHelper.badRequest(ResponseCodes.FLIGHT_NOT_FOUND,
+                    "Flight not found with this FlightNumber",request.getFlightNumber());
+        }
+
+        if(flightNotFound(request.getReturnFlightNumber())) {
+            return ResponseHelper.badRequest(ResponseCodes.FLIGHT_NOT_FOUND,
+                    "Return Flight not found with this FlightNumber",request.getReturnFlightNumber());
+        }
+
+        Booking savedBooking1 = bookingService.createBooking(request);
+
+        BookingOneWayRequest request1 = new BookingOneWayRequest();
+        request1.setUserIdNumber(request.getUserIdNumber());
+        request1.setPassengers(request.getPassengers());
+        request1.setFlightNumber(request.getReturnFlightNumber());
+        request1.setDepartureDate(request.getReturnDate());
+
+        Booking savedBooking2 = bookingService.createBooking(request1);
+
+        if((savedBooking1!=null)&&(savedBooking2!=null)) {
+            return getBookingResponseEntity(savedBooking1, new BookingTwoWayResponse());
+        }
+        return ResponseHelper.badRequest(ResponseCodes.BOOKING_FAILED,"Booking failed",
+                request);
+
+    }
 
     @PostMapping("/{bookingId}/confirm")
     public ResponseEntity<ApiResponse> confirmBooking(@PathVariable Long bookingId) {
@@ -45,7 +93,7 @@ public class BookingController {
         }
 
         return bookingService.confirmBooking(bookingId)
-                .map(this::getBookingResponseEntity)
+                .map(booking -> getBookingResponseEntity(booking, new BookingResponse()))
                 .orElseGet(() -> ResponseHelper.badRequest(ResponseCodes.CONFIRM_BOOKING_FAILED, "Failed to confirm the booking", null));
 
     }
@@ -57,7 +105,7 @@ public class BookingController {
         }
 
         return bookingService.findBookingById(bookingId)
-                .map(this::getBookingResponseEntity)
+                .map(booking -> getBookingResponseEntity(booking, new BookingResponse()))
                 .orElseGet(() -> ResponseHelper.badRequest(ResponseCodes.BOOKING_NOT_FOUND, "Booking not found", null));
     }
 
@@ -68,13 +116,19 @@ public class BookingController {
         }
 
         return bookingService.cancelBooking(bookingId)
-                .map(this::getBookingResponseEntity)
+                .map(booking -> getBookingResponseEntity(booking, new BookingResponse()))
                 .orElseGet(() -> ResponseHelper.badRequest(ResponseCodes.CANCEL_BOOKING_FAILED, "Booking cannot be cancelled", null));
+
+    }
+    private boolean userNotFound(String userIdNumber) {
+        return userService.findUserByUserIdNumber(userIdNumber).isEmpty();
     }
 
+    private boolean flightNotFound(String flightNumber) {
+        return flightService.searchFlightByFlightNumber(flightNumber).isEmpty();
+    }
 
-    private ResponseEntity<ApiResponse> getBookingResponseEntity(Booking savedBooking) {
-        BookingResponse bookingResponse = new BookingResponse();
+    private ResponseEntity<ApiResponse> getBookingResponseEntity(Booking savedBooking, BookingResponse bookingResponse) {
         List<String> passengerIDNumbers = new ArrayList<>();
         bookingResponse.setBookingStatus(savedBooking.getBookingStatus());
         for(Passenger passenger : savedBooking.getPassengers()) {
@@ -87,6 +141,11 @@ public class BookingController {
         bookingResponse.setPaymentStatus(savedBooking.getPaymentStatus());
         bookingResponse.setCreatedAt(savedBooking.getCreatedAt());
         bookingResponse.setUpdatedAt(savedBooking.getUpdatedAt());
+
+        if (bookingResponse instanceof BookingTwoWayResponse) {
+            ((BookingTwoWayResponse) bookingResponse).setReturnData(savedBooking.getReturnDate());
+            ((BookingTwoWayResponse) bookingResponse).setReturnFlightNumber(savedBooking.getReturnFlightNumber());
+        }
 
         return ResponseHelper.success(bookingResponse);
     }

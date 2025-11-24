@@ -9,7 +9,8 @@ import epam.autotesting.flightbooking.repository.FlightInfoRepository;
 import epam.autotesting.flightbooking.repository.PassengerRepository;
 import epam.autotesting.flightbooking.repository.UserRepository;
 import epam.autotesting.flightbooking.requestsresponses.BookingPassengerRequest;
-import epam.autotesting.flightbooking.requestsresponses.BookingRequest;
+import epam.autotesting.flightbooking.requestsresponses.BookingOneWayRequest;
+import epam.autotesting.flightbooking.requestsresponses.BookingTwoWayRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,22 +45,10 @@ public class BookingService {
         return bookingRepository.findAll();
     }
 
-    public Booking createBooking(BookingRequest request) {
-        /* To-do Validate flight and seat availability */
+    public Booking createBooking(BookingOneWayRequest request) {
 
         String userIdNumber = request.getUserIdNumber();
-        Optional<UserInfo> userInfo = userRepository.findByIdNumber(userIdNumber);
-        if(userInfo.isEmpty()) {
-            logger.error("User not found");
-            return null;
-        }
-
         String flightNumber = request.getFlightNumber();
-        Optional<FlightInfo> flightInfo = flightInfoRepository.findByFlightNumber(flightNumber);
-        if(flightInfo.isEmpty()) {
-            logger.error("Flight not found");
-            return null;
-        }
 
         List<BookingPassengerRequest> requestPassengers = request.getPassengers();
         logger.info("Passengers size {}", requestPassengers.size());
@@ -71,23 +60,7 @@ public class BookingService {
         logger.info("preparing passenger information to be registered ");
         for(BookingPassengerRequest passenger : requestPassengers) {
 
-            //check seat available or not
-            if(!seatService.isSeatAvailable(flightNumber,passenger.getSeatNumber())){
-
-            }
-
-
-
-            Passenger newPassenger = new Passenger();
-
-            newPassenger.setFirstName(passenger.getFirstName());
-            newPassenger.setLastName(passenger.getLastName());
-            newPassenger.setBirthday(passenger.getBirthday());
-            newPassenger.setIdType(passenger.getIdType());
-            newPassenger.setIdNumber(passenger.getIdNumber());
-            newPassenger.setSeatNumber(passenger.getSeatNumber());
-            newPassenger.setFlightNumber(flightNumber);
-            newPassenger.setBaggages(null);
+            Passenger newPassenger = getPassenger(passenger, flightNumber);
             Passenger savedPassenger = passengerService.savePassenger(newPassenger);
             logger.info("Passenger saved without baggages successfully");
 
@@ -122,20 +95,25 @@ public class BookingService {
             seats.add(passenger.getSeatNumber());
         }
 
-        //book seats in flight
-
-
         logger.info("Processing Booking information");
 
         Booking booking = new Booking();
         booking.setUserId(userIdNumber);
-        booking.setFlightNumber(flightInfo.get().getFlightNumber());
+        booking.setFlightNumber(flightNumber);
         booking.setPassengers(null);
         booking.setSeats(seats);
         booking.setBookingStatus(BookingStatus.PENDING);
         booking.setPaymentStatus(PaymentStatus.UNPAID);
         booking.setCreatedAt(LocalDateTime.now());
         booking.setUpdatedAt(LocalDateTime.now());
+        booking.setDepartureDate(request.getDepartureDate());
+
+        if(request instanceof BookingTwoWayRequest){
+            booking.setReturnDate(((BookingTwoWayRequest) request).getReturnDate());
+            booking.setReturnFlightNumber(((BookingTwoWayRequest) request).getReturnFlightNumber());
+
+        }
+
         Booking savedbooking = bookingRepository.save(booking);
         logger.info("booking created with flight {} with no passenger", flightNumber);
         logger.info("booking created with booking_id {}", savedbooking.getBookingId());
@@ -146,6 +124,20 @@ public class BookingService {
         logger.info("Booking created with passenger {} ", userIdNumber);
 
          return savedbooking;
+    }
+
+    private static Passenger getPassenger(BookingPassengerRequest passenger, String flightNumber) {
+        Passenger newPassenger = new Passenger();
+
+        newPassenger.setFirstName(passenger.getFirstName());
+        newPassenger.setLastName(passenger.getLastName());
+        newPassenger.setBirthday(passenger.getBirthday());
+        newPassenger.setIdType(passenger.getIdType());
+        newPassenger.setIdNumber(passenger.getIdNumber());
+        newPassenger.setSeatNumber(passenger.getSeatNumber());
+        newPassenger.setFlightNumber(flightNumber);
+        newPassenger.setBaggages(null);
+        return newPassenger;
     }
 
     public Optional<Booking> findBookingById(Long bookingId) {

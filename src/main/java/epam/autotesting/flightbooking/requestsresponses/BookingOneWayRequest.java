@@ -1,15 +1,15 @@
 package epam.autotesting.flightbooking.requestsresponses;
 
-import epam.autotesting.flightbooking.model.Passenger;
-
+import java.time.LocalDate;
 import java.util.List;
 
-public class BookingRequest {
+public class BookingOneWayRequest {
     private String userIdNumber;
     private String flightNumber;
+    private LocalDate departureDate;
     private List<BookingPassengerRequest> passengers;
 
-    public BookingRequest() {}
+    public BookingOneWayRequest() {}
 
     public String getUserIdNumber() {
         return userIdNumber;
@@ -25,6 +25,14 @@ public class BookingRequest {
 
     public void setFlightNumber(String flightNumber) {
         this.flightNumber = flightNumber;
+    }
+
+    public LocalDate getDepartureDate() {
+        return departureDate;
+    }
+
+    public void setDepartureDate(LocalDate departureDate) {
+        this.departureDate = departureDate;
     }
 
     public List<BookingPassengerRequest> getPassengers() {
