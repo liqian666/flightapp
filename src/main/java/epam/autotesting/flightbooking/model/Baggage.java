@@ -45,8 +45,8 @@ public class Baggage {
     public String toString() {
         return "Baggage{" +
                 "id=" + id +
-                ", weight=" + baggageType +
-                ", passengerId=" + (passenger != null ? passenger.getPassengerId() : null) +
+                ", baggageType=" + baggageType +
+                ", passengerId=" + (passenger != null ? passenger.getIdentityCardNumber() : null) +
                 '}';
     }
 }

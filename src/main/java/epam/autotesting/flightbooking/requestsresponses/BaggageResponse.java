@@ -7,14 +7,14 @@ import java.util.List;
 
 public class BaggageResponse {
     private List<BaggageType> baggageTypeList;
-    private Long passengerId;
+    private String identityCardNumber;
 
-    public Long getPassengerId() {
-        return passengerId;
+    public String getIdentityCardNumber() {
+        return identityCardNumber;
     }
 
-    public void setPassengerId(Long passengerId) {
-        this.passengerId = passengerId;
+    public void setIdentityCardNumber(String identityCardNumber) {
+        this.identityCardNumber = identityCardNumber;
     }
 
     public List<BaggageType> getBaggageTypeList() {

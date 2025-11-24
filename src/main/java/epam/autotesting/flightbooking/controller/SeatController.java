@@ -56,8 +56,8 @@ public class SeatController {
     }
 
     @PostMapping("/bookseat")
-    public ResponseEntity<ApiResponse> bookSeat(@RequestParam String seatNumber, @RequestParam String flightNumber, @RequestParam String passengerIdNumber) {
-        if((seatNumber==null)||(flightNumber==null)||(passengerIdNumber==null)){
+    public ResponseEntity<ApiResponse> bookSeat(@RequestParam String seatNumber, @RequestParam String flightNumber, @RequestParam String identityCarNumber) {
+        if((seatNumber==null)||(flightNumber==null)||(identityCarNumber==null)){
             return ResponseHelper.badRequest(ResponseCodes.SEAT_NUMBER_IS_EMPTY,
                     "Seat number or Flight number or PassengerId Number is empty",
                     seatNumber);
@@ -71,11 +71,11 @@ public class SeatController {
                     " flightNumber: "+ flightNumber);
         }
 
-        Optional<Passenger> foundPassenger = passengerService.findPassengerByIdNumber(passengerIdNumber);
+        Optional<Passenger> foundPassenger = passengerService.findPassengerBIdentityCardNumberAndFlightNumber(identityCarNumber,flightNumber);
         if(foundPassenger.isEmpty()){
             return ResponseHelper.badRequest(ResponseCodes.PASSENGER_NOT_FOUND,
                     "Passenger not found",
-                    " passengerIdNumber: "+ passengerIdNumber);
+                    " passengerIdNumber: "+ identityCarNumber);
         }
 
 

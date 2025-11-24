@@ -17,8 +17,8 @@ public class Passenger {
     private LocalDate birthday;
 
     @Enumerated(EnumType.STRING)
-    private IDType idType;
-    private String idNumber;
+    private IDType identityCardType;
+    private String identityCardNumber;
 
     private String seatNumber;
 //    private Integer bagsNumber;
@@ -27,15 +27,6 @@ public class Passenger {
     @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "passenger_id")
     private List<Baggage> baggages;
-
-
-    public Long getPassengerId() {
-        return passengerId;
-    }
-
-    public void setPassengerId(Long passengerId) {
-        this.passengerId = passengerId;
-    }
 
     public List<Baggage> getBaggages() {
         return baggages;
@@ -69,12 +60,12 @@ public class Passenger {
         this.lastName = lastName;
     }
 
-    public String getIdNumber() {
-        return idNumber;
+    public String getIdentityCardNumber() {
+        return identityCardNumber;
     }
 
-    public void setIdNumber(String idNumber) {
-        this.idNumber = idNumber;
+    public void setIdentityCardNumber(String identityCardNumber) {
+        this.identityCardNumber = identityCardNumber;
     }
 
     public String getSeatNumber() {
@@ -93,11 +84,11 @@ public class Passenger {
         this.birthday = birthday;
     }
 
-    public IDType getIdType() {
-        return idType;
+    public IDType getIdentityCardType() {
+        return identityCardType;
     }
 
-    public void setIdType(IDType idType) {
-        this.idType = idType;
+    public void setIdentityCardType(IDType identityCardType) {
+        this.identityCardType = identityCardType;
     }
 }

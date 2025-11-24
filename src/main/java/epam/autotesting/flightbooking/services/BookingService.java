@@ -47,12 +47,12 @@ public class BookingService {
 
     public Booking createBooking(BookingOneWayRequest request) {
 
-        String userIdNumber = request.getUserIdNumber();
+        String userIdNumber = request.getUserIdentityCardNumber();
         String flightNumber = request.getFlightNumber();
 
         List<BookingPassengerRequest> requestPassengers = request.getPassengers();
         logger.info("Passengers size {}", requestPassengers.size());
-        logger.info("Passengers 1 IDNumber {}", requestPassengers.get(0).getIdNumber());
+        logger.info("Passengers 1 IDNumber {}", requestPassengers.get(0).getIdentityCardNumber());
 
         List<Passenger> passengerList = new ArrayList<>();
         List<String> seats = new ArrayList<>();
@@ -77,18 +77,18 @@ public class BookingService {
                 newBaggage.setPassenger(savedPassenger);
                 newBaggage.setBaggageType(baggageTypes);
                 baggageList.add(newBaggage);
-                logger.info("Baggage added for passenger {} in baggageList", newBaggage.getPassenger().getPassengerId());
+                logger.info("Baggage added for passenger {} in baggageList", newBaggage.getPassenger().getIdentityCardNumber());
             }
             //save the baggages to the already saved passenger
             logger.info("BaggageList size {} " , baggageList.size());
             logger.info("trying to save baggage information");
             baggageService.saveBaggages(baggageList);
-            logger.info("Baggages saved to passenger{}", savedPassenger.getPassengerId());
+            logger.info("Baggages saved to passenger{}", savedPassenger.getIdentityCardNumber());
 
             //update passenger with the baggages
             savedPassenger.setBaggages(baggageList);
             passengerService.savePassenger(savedPassenger);
-            logger.info("Passenger updated with the baggages {}", savedPassenger.getPassengerId());
+            logger.info("Passenger updated with the baggages {}", savedPassenger.getIdentityCardNumber());
 
 
             passengerList.add(newPassenger);
@@ -132,8 +132,8 @@ public class BookingService {
         newPassenger.setFirstName(passenger.getFirstName());
         newPassenger.setLastName(passenger.getLastName());
         newPassenger.setBirthday(passenger.getBirthday());
-        newPassenger.setIdType(passenger.getIdType());
-        newPassenger.setIdNumber(passenger.getIdNumber());
+        newPassenger.setIdentityCardType(passenger.getIdentityCardType());
+        newPassenger.setIdentityCardNumber(passenger.getIdentityCardNumber());
         newPassenger.setSeatNumber(passenger.getSeatNumber());
         newPassenger.setFlightNumber(flightNumber);
         newPassenger.setBaggages(null);

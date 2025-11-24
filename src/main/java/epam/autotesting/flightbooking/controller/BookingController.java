@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/bookings")
@@ -31,7 +30,7 @@ public class BookingController {
 
     @PostMapping("/oneway")
     public ResponseEntity<ApiResponse> oneWayBooking(@RequestBody BookingOneWayRequest request) {
-        if(userNotFound(request.getUserIdNumber())) {
+        if(userNotFound(request.getUserIdentityCardNumber())) {
             return ResponseHelper.badRequest(ResponseCodes.USER_NOT_FOUND,
                     "User not found with this UserID",request.getFlightNumber());
         }
@@ -53,7 +52,7 @@ public class BookingController {
     @PostMapping("/twoway")
     public ResponseEntity<ApiResponse> twoWayBooking(@RequestBody BookingTwoWayRequest request) {
 
-        if(userNotFound(request.getUserIdNumber())) {
+        if(userNotFound(request.getUserIdentityCardNumber())) {
             return ResponseHelper.badRequest(ResponseCodes.USER_NOT_FOUND,
                     "User not found with this UserID",request.getFlightNumber());
         }
@@ -71,7 +70,7 @@ public class BookingController {
         Booking savedBooking1 = bookingService.createBooking(request);
 
         BookingOneWayRequest request1 = new BookingOneWayRequest();
-        request1.setUserIdNumber(request.getUserIdNumber());
+        request1.setUserIdentityCardNumber(request.getUserIdentityCardNumber());
         request1.setPassengers(request.getPassengers());
         request1.setFlightNumber(request.getReturnFlightNumber());
         request1.setDepartureDate(request.getReturnDate());
@@ -132,11 +131,11 @@ public class BookingController {
         List<String> passengerIDNumbers = new ArrayList<>();
         bookingResponse.setBookingStatus(savedBooking.getBookingStatus());
         for(Passenger passenger : savedBooking.getPassengers()) {
-            passengerIDNumbers.add(passenger.getIdNumber());
+            passengerIDNumbers.add(passenger.getIdentityCardNumber());
         }
         bookingResponse.setPassengersIdNumbers(passengerIDNumbers);
         bookingResponse.setFlightNumber(savedBooking.getFlightNumber());
-        bookingResponse.setUserId(savedBooking.getUserId());
+        bookingResponse.setUserIdentityCardNumber(savedBooking.getUserId());
         bookingResponse.setSeats(savedBooking.getSeats());
         bookingResponse.setPaymentStatus(savedBooking.getPaymentStatus());
         bookingResponse.setCreatedAt(savedBooking.getCreatedAt());

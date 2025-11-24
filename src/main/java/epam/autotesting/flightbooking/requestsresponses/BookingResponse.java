@@ -2,14 +2,13 @@ package epam.autotesting.flightbooking.requestsresponses;
 
 import epam.autotesting.flightbooking.helper.BookingStatus;
 import epam.autotesting.flightbooking.helper.PaymentStatus;
-import epam.autotesting.flightbooking.model.Passenger;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
 public class BookingResponse {
-    private String userId;
+    private String userIdentityCardNumber;
     private String flightNumber;
     @Enumerated(EnumType.STRING)
     private PaymentStatus paymentStatus;
@@ -20,12 +19,12 @@ public class BookingResponse {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
-    public String getUserId() {
-        return userId;
+    public String getUserIdentityCardNumber() {
+        return userIdentityCardNumber;
     }
 
-    public void setUserId(String userId) {
-        this.userId = userId;
+    public void setUserIdentityCardNumber(String userIdentityCardNumber) {
+        this.userIdentityCardNumber = userIdentityCardNumber;
     }
 
     public String getFlightNumber() {

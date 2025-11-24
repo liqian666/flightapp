@@ -2,7 +2,6 @@ package epam.autotesting.flightbooking.requestsresponses;
 
 import epam.autotesting.flightbooking.helper.BaggageType;
 import epam.autotesting.flightbooking.helper.IDType;
-import epam.autotesting.flightbooking.model.Baggage;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 
@@ -15,8 +14,8 @@ public class BookingPassengerRequest {
     private LocalDate birthday;
 
     @Enumerated(EnumType.STRING)
-    private IDType idType;
-    private String idNumber;
+    private IDType identityCardType;
+    private String identityCardNumber;
 
     private String seatNumber;
     private List<BaggageType> baggageTypes;
@@ -45,20 +44,20 @@ public class BookingPassengerRequest {
         this.birthday = birthday;
     }
 
-    public IDType getIdType() {
-        return idType;
+    public IDType getIdentityCardType() {
+        return identityCardType;
     }
 
-    public void setIdType(IDType idType) {
-        this.idType = idType;
+    public void setIdentityCardType(IDType identityCardType) {
+        this.identityCardType = identityCardType;
     }
 
-    public String getIdNumber() {
-        return idNumber;
+    public String getIdentityCardNumber() {
+        return identityCardNumber;
     }
 
-    public void setIdNumber(String idNumber) {
-        this.idNumber = idNumber;
+    public void setIdentityCardNumber(String identityCardNumber) {
+        this.identityCardNumber = identityCardNumber;
     }
 
     public String getSeatNumber() {

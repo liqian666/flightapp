@@ -12,8 +12,8 @@ public class PassengerRequest {
     private LocalDate birthday;
 
     @Enumerated(EnumType.STRING)
-    private IDType idType;
-    private String idNumber;
+    private IDType identityCardType;
+    private String identityCardNumber;
 
     private String seatNumber;
     private String flightNumber;
@@ -42,20 +42,20 @@ public class PassengerRequest {
         this.birthday = birthday;
     }
 
-    public IDType getIdType() {
-        return idType;
+    public IDType getIdentityCardType() {
+        return identityCardType;
     }
 
-    public void setIdType(IDType idType) {
-        this.idType = idType;
+    public void setIdentityCardType(IDType identityCardType) {
+        this.identityCardType = identityCardType;
     }
 
-    public String getIdNumber() {
-        return idNumber;
+    public String getIdentityCardNumber() {
+        return identityCardNumber;
     }
 
-    public void setIdNumber(String idNumber) {
-        this.idNumber = idNumber;
+    public void setIdentityCardNumber(String identityCardNumber) {
+        this.identityCardNumber = identityCardNumber;
     }
 
     public String getSeatNumber() {

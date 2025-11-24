@@ -4,19 +4,19 @@ import java.time.LocalDate;
 import java.util.List;
 
 public class BookingOneWayRequest {
-    private String userIdNumber;
+    private String userIdentityCardNumber;
     private String flightNumber;
     private LocalDate departureDate;
     private List<BookingPassengerRequest> passengers;
 
     public BookingOneWayRequest() {}
 
-    public String getUserIdNumber() {
-        return userIdNumber;
+    public String getUserIdentityCardNumber() {
+        return userIdentityCardNumber;
     }
 
-    public void setUserIdNumber(String userIdNumber) {
-        this.userIdNumber = userIdNumber;
+    public void setUserIdentityCardNumber(String userIdentityCardNumber) {
+        this.userIdentityCardNumber = userIdentityCardNumber;
     }
 
     public String getFlightNumber() {
@@ -46,7 +46,7 @@ public class BookingOneWayRequest {
     @Override
     public String toString() {
         return "BookingRequest{" +
-                "passengerId='" + userIdNumber + '\'' +
+                "passengerId='" + userIdentityCardNumber + '\'' +
                 ", flightNumber='" + flightNumber + '\'' +
                 '}';
     }

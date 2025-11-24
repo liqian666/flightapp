@@ -23,16 +23,21 @@ public class PassengerService {
     }
 
     public Passenger savePassenger(Passenger passenger) {
-        passenger.setIdNumber(passenger.getIdNumber());
+        passenger.setIdentityCardNumber(passenger.getIdentityCardNumber());
         return passengerRepository.save(passenger);
     }
 
     public Optional<Passenger> findPassengerByIdTypeAndIdNumber(IDType idType, String idNumber) {
-        return passengerRepository.findByIdTypeAndIdNumber(idType,idNumber);
+        return passengerRepository.findByIdentityCardTypeAndIdentityCardNumber(idType,idNumber);
     }
 
-    public Optional<Passenger> findPassengerByIdNumber(String idNumber) {
-        return passengerRepository.findByIdNumber(idNumber);
+//    public Optional<Passenger> findPassengerByIdNumber(String idNumber) {
+//        return passengerRepository.findByIdentityCardNumber(idNumber);
+//    }
+
+    public Optional<Passenger> findPassengerBIdentityCardNumberAndFlightNumber(String identityCardNumber,
+                                                                               String flightNumber) {
+        return passengerRepository.findByIdentityCardNumberAndFlightNumber(identityCardNumber,flightNumber);
     }
 
 }

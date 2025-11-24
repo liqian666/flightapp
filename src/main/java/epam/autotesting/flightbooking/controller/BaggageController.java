@@ -27,13 +27,15 @@ public class BaggageController {
     private static final Logger logger = LoggerFactory.getLogger(BaggageController.class);
 
     @PostMapping("/add")
-    public ResponseEntity<ApiResponse> addBaggages(@RequestBody List<BaggageType> baggageTypes, @RequestParam Long passengerId) {
+    public ResponseEntity<ApiResponse> addBaggages(@RequestParam List<BaggageType> baggageTypes,
+                                                   @RequestParam String identityCardNumber,
+                                                   @RequestParam String flightNumber) {
 
-        if(passengerId==null){
+        if(identityCardNumber==null){
             return ResponseHelper.badRequest(ResponseCodes.PASSENGER_NOT_FOUND,"PassengerId is empty",  null);
         }
 
-        Optional<Passenger> passenger = passengerService.findByPassengerId(passengerId);
+        Optional<Passenger> passenger = passengerService.findPassengerBIdentityCardNumberAndFlightNumber(identityCardNumber, flightNumber);
         if(passenger.isPresent()){
             List<Baggage> baggageList = new ArrayList();
             for(BaggageType baggageType : baggageTypes){
@@ -48,7 +50,7 @@ public class BaggageController {
             List<Baggage> savedBaggageList = baggageService.saveBaggages(baggageList);
             List<BaggageType>  baggageTypeList = new ArrayList<>();
             BaggageResponse baggageResponse = new BaggageResponse();
-            baggageResponse.setPassengerId(passengerId);
+            baggageResponse.setIdentityCardNumber(identityCardNumber);
             for (Baggage savedBaggage : savedBaggageList) {
                 logger.info("Saving baggage with id {} ", savedBaggage.getId());
                 baggageTypeList.add(savedBaggage.getBaggageType());
@@ -62,13 +64,13 @@ public class BaggageController {
     }
 
     @GetMapping("/find/passengerId")
-    public ResponseEntity<ApiResponse> searchByPassengerId(@RequestParam Long passengerId) {
+    public ResponseEntity<ApiResponse> searchByPassengerId(@RequestParam String identityCardNumber,@RequestParam String flightNumber) {
 
-        List<Baggage> baggages = baggageService.findBaggageByPassengerId(passengerId);
+        List<Baggage> baggages = baggageService.findBaggageByPassengerIdAndFlightNumber(identityCardNumber,flightNumber);
         if (baggages!=null) {
             logger.info("baggages found {} ",baggages);
             BaggageResponse baggageResponse = new BaggageResponse();
-            baggageResponse.setPassengerId(passengerId);
+            baggageResponse.setIdentityCardNumber(identityCardNumber);
             List<BaggageType> baggageTypes = new ArrayList<>();
             for (Baggage baggage : baggages) {
                 baggageTypes.add(baggage.getBaggageType());
@@ -78,7 +80,7 @@ public class BaggageController {
             return ResponseHelper.success(baggageResponse);
         }
         logger.info("did not found baggages ");
-        return ResponseHelper.badRequest(ResponseCodes.BAGGAGE_NOT_FOUND, "Passenger doesn't have baggage", passengerId);
+        return ResponseHelper.badRequest(ResponseCodes.BAGGAGE_NOT_FOUND, "Passenger doesn't have baggage", identityCardNumber);
 
     }
 }

@@ -19,7 +19,7 @@ public class UserService {
     }
 
     public Optional<UserInfo> findUserByIdTypeAndIdNumber(IDType idType, String idNumber) {
-        return userRepository.findByIdTypeAndIdNumber(idType,idNumber);
+        return userRepository.findByIdentityCardTypeAndIdentityCardNumber(idType,idNumber);
     }
 
     public List<UserInfo> findAllUsers() {
@@ -27,6 +27,6 @@ public class UserService {
     }
 
     public Optional<UserInfo> findUserByUserIdNumber(String userIdNumber) {
-        return userRepository.findByIdNumber(userIdNumber);
+        return userRepository.findByIdentityCardNumber(userIdNumber);
     }
 }

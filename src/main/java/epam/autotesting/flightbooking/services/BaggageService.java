@@ -31,7 +31,7 @@ public class BaggageService {
             return null;
         }
         Passenger passenger = toBeSavedBaggages.get(0).getPassenger();
-        logger.info("save baggages to passenger {}", passenger.getPassengerId());
+        logger.info("save baggages to passenger {}", passenger.getIdentityCardNumber());
 
         //if the passagener has already some baggages
 //        List<Baggage> baggagesList = passenger.getBaggages();
@@ -60,10 +60,10 @@ public class BaggageService {
 
     }
 
-    public List<Baggage> findBaggageByPassengerId(Long passengerId) {
-        Optional<Passenger> passenger = passengerRepository.findByPassengerId(passengerId);
+    public List<Baggage> findBaggageByPassengerIdAndFlightNumber(String identityCardNumber,String flightNumber) {
+        Optional<Passenger> passenger = passengerRepository.findByIdentityCardNumberAndFlightNumber(identityCardNumber,flightNumber);
         if(passenger.isPresent()){
-            logger.info("passenger ID {}",passenger.get().getPassengerId());
+            logger.info("passenger ID {}",passenger.get().getIdentityCardNumber());
             return baggageRepository.findByPassenger(passenger.get());
         }
         return null;
