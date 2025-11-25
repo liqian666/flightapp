@@ -56,18 +56,15 @@ public class BookingController {
     public ResponseEntity<ApiResponse> twoWayBooking(@RequestBody BookingTwoWayRequest request) {
 
         if(userNotFound(request.getUserIdentityCardNumber())) {
-            return ResponseHelper.badRequest(ResponseCodes.USER_NOT_FOUND,
-                    "User not found with this UserID",request.getFlightNumber());
+            return ResponseHelper.userNotFound(request.getFlightNumber());
         }
 
         if(flightNotFound(request.getFlightNumber())) {
-            return ResponseHelper.badRequest(ResponseCodes.FLIGHT_NOT_FOUND,
-                    "Flight not found with this FlightNumber",request.getFlightNumber());
+            return ResponseHelper.flightNotFound(request.getFlightNumber());
         }
 
         if(flightNotFound(request.getReturnFlightNumber())) {
-            return ResponseHelper.badRequest(ResponseCodes.FLIGHT_NOT_FOUND,
-                    "Return Flight not found with this FlightNumber",request.getReturnFlightNumber());
+            return ResponseHelper.flightNotFound(request.getReturnFlightNumber());
         }
 
         Booking savedBooking1 = bookingService.createBooking(request);
@@ -90,9 +87,6 @@ public class BookingController {
 
     @PostMapping("/{bookingId}/confirm")
     public ResponseEntity<ApiResponse> confirmBooking(@PathVariable Long bookingId) {
-        if(bookingId==null){
-            return ResponseHelper.badRequest(ResponseCodes.BOOKING_ID_EMPTY,"Booking Id is empty",null);
-        }
 
         return bookingService.confirmBooking(bookingId)
                 .map(booking -> getBookingResponseEntity(booking, new BookingResponse()))
@@ -102,13 +96,10 @@ public class BookingController {
 
     @GetMapping("/{bookingId}")
     public ResponseEntity<ApiResponse> findBookingById(@PathVariable Long bookingId) {
-        if(bookingId==null){
-            return ResponseHelper.badRequest(ResponseCodes.BOOKING_ID_EMPTY,"Booking Id is empty",null);
-        }
 
         return bookingService.findBookingById(bookingId)
                 .map(booking -> getBookingResponseEntity(booking, new BookingResponse()))
-                .orElseGet(() -> ResponseHelper.badRequest(ResponseCodes.BOOKING_NOT_FOUND, "Booking not found", null));
+                .orElseGet(() -> ResponseHelper.bookingNotFound(bookingId));
     }
 
     @PostMapping("/{bookingId}/cancel")
@@ -116,7 +107,8 @@ public class BookingController {
 
         return bookingService.cancelBooking(bookingId)
                 .map(booking -> getBookingResponseEntity(booking, new BookingResponse()))
-                .orElseGet(() -> ResponseHelper.badRequest(ResponseCodes.CANCEL_BOOKING_FAILED, "Booking cannot be cancelled", null));
+                .orElseGet(() -> ResponseHelper.badRequest(ResponseCodes.CANCEL_BOOKING_FAILED,
+                        "Booking cannot be cancelled", bookingId));
 
     }
 
