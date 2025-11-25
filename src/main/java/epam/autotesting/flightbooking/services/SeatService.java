@@ -7,6 +7,7 @@ import epam.autotesting.flightbooking.repository.FlightInfoRepository;
 import epam.autotesting.flightbooking.repository.PassengerRepository;
 import epam.autotesting.flightbooking.repository.SeatRepository;
 import io.micrometer.observation.GlobalObservationConvention;
+import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,5 +61,14 @@ public class SeatService {
             return seat.isAvailable();
         }
         return false;
+    }
+
+    public Optional<Seat> findSeatBySeatNumberAndFlightNumber(String seatNumber, String flightNumber) {
+        return seatRepository.findBySeatNumberAndFlightNumber(seatNumber,flightNumber);
+    }
+
+    @Transactional
+    public void deleteSeat(Seat seat) {
+        seatRepository.delete(seat);
     }
 }

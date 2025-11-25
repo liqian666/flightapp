@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/bookings")
@@ -110,14 +111,21 @@ public class BookingController {
 
     @PostMapping("/{bookingId}/cancel")
     public ResponseEntity<ApiResponse> cancelBooking(@PathVariable Long bookingId) {
-        if (bookingId == null) {
-            return ResponseHelper.badRequest(ResponseCodes.BOOKING_ID_EMPTY, "Booking Id is empty", null);
-        }
 
         return bookingService.cancelBooking(bookingId)
                 .map(booking -> getBookingResponseEntity(booking, new BookingResponse()))
                 .orElseGet(() -> ResponseHelper.badRequest(ResponseCodes.CANCEL_BOOKING_FAILED, "Booking cannot be cancelled", null));
 
+    }
+
+    @DeleteMapping("/{bookingId}/delete")
+    public ResponseEntity<ApiResponse> deleteBooking(@PathVariable Long bookingId) {
+        Optional<Booking> toBeDeletedBooking = bookingService.findBookingById(bookingId);
+        if(toBeDeletedBooking.isPresent()) {
+            bookingService.deleteBooking(bookingId);
+            return  ResponseHelper.success("Booking Id: " + bookingId + " has been deleted");
+        }
+        else return ResponseHelper.bookingNotFound("Booking Id: " + bookingId);
     }
     private boolean userNotFound(String userIdNumber) {
         return userService.findUserByUserIdNumber(userIdNumber).isEmpty();

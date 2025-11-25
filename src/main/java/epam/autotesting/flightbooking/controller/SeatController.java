@@ -88,4 +88,16 @@ public class SeatController {
                 "seatNumber: "+ seatNumber+" flightNumber: "+ flightNumber);
     }
 
+    @DeleteMapping("/delete")
+    public ResponseEntity<ApiResponse> deleteSeat(@RequestParam String seatNumber, @RequestParam String flightNumber) {
+        Optional<Seat> tobeDeletedSeat = seatService.findSeatBySeatNumberAndFlightNumber(seatNumber,flightNumber);
+        if(tobeDeletedSeat.isPresent()){
+            seatService.deleteSeat(tobeDeletedSeat.get());
+            return ResponseHelper.success(tobeDeletedSeat.get());
+        }
+        return ResponseHelper.seatNotFound("Seat Number: " + seatNumber + " and Flight Number: " + flightNumber);
+
+    }
+
+
 }

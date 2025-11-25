@@ -11,6 +11,7 @@ import epam.autotesting.flightbooking.repository.UserRepository;
 import epam.autotesting.flightbooking.requestsresponses.BookingPassengerRequest;
 import epam.autotesting.flightbooking.requestsresponses.BookingOneWayRequest;
 import epam.autotesting.flightbooking.requestsresponses.BookingTwoWayRequest;
+import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -185,7 +186,12 @@ public class BookingService {
         return  false;
     }
 
+    @Transactional
     public void deleteBooking(Long id) {
+        //Delete passengers first
+        Optional<Booking> booking = bookingRepository.findById(id);
+        booking.ifPresent(value -> value.getPassengers().forEach(passenger -> passengerService.deletePassenger(passenger)));
+        //delete booking
         bookingRepository.deleteById(id);
     }
 

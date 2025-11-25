@@ -22,6 +22,12 @@ public class ResponseHelper {
                 data);
     }
 
+    public static ResponseEntity<ApiResponse> seatNotFound(Object data) {
+        return ResponseHelper.badRequest(ResponseCodes.SEAT_NOT_FOUND,
+                "Seat not found",
+                data);
+    }
+
     public static ResponseEntity<ApiResponse> passengerNotFound(Object data) {
         return ResponseHelper.badRequest(ResponseCodes.PASSENGER_NOT_FOUND,
                 "Passenger not found",
@@ -43,6 +49,12 @@ public class ResponseHelper {
     public static ResponseEntity<ApiResponse> failedToDelete(Object data) {
         return ResponseHelper.badRequest(ResponseCodes.DELETING_FAILED,
                 "Failed to delete",
+                data);
+    }
+
+    public static ResponseEntity<ApiResponse> flightNotFound(Object data) {
+        return ResponseHelper.badRequest(ResponseCodes.FLIGHT_NOT_FOUND,
+                "Flight not found",
                 data);
     }
 

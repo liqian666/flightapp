@@ -14,6 +14,7 @@ public interface FlightInfoRepository extends JpaRepository<FlightInfo, Long> {
 
     List<FlightInfo> findByOriginAndDestination(String origin, String destination);
     Optional<FlightInfo> findByFlightNumber(String flightNumber);
+    void deleteByFlightNumber(String flightNumber);
 
 
 }

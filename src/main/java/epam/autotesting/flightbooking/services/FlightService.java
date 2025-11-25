@@ -2,6 +2,7 @@ package epam.autotesting.flightbooking.services;
 
 import epam.autotesting.flightbooking.model.FlightInfo;
 import epam.autotesting.flightbooking.repository.FlightInfoRepository;
+import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,5 +49,10 @@ public class FlightService {
 
     public Optional<FlightInfo> searchFlightByFlightNumber(String flightNumber) {
         return flightInfoRepository.findByFlightNumber(flightNumber);
+    }
+
+    @Transactional
+    public void deleteFlightByFlightNumber(String flightNumber) {
+        flightInfoRepository.deleteByFlightNumber(flightNumber);
     }
 }

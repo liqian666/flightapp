@@ -6,11 +6,13 @@ import epam.autotesting.flightbooking.requestsresponses.ResponseCodes;
 import epam.autotesting.flightbooking.requestsresponses.ResponseHelper;
 import epam.autotesting.flightbooking.services.FlightService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.expression.spel.ast.FloatLiteral;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("api/flights")
@@ -69,5 +71,21 @@ public class FlightController {
                 "No available flights found",
                 "origin: "+origin+" destination: "+destination+" depature data: "+departureDate);
 
+    }
+
+    @GetMapping("/{flightNumber}/search")
+    public ResponseEntity<ApiResponse> searchFlightsByFlightNumber(@PathVariable String flightNumber){
+        Optional<FlightInfo> foundFlight = flightService.searchFlightByFlightNumber(flightNumber);
+        return foundFlight.map(ResponseHelper::success).orElseGet(() -> ResponseHelper.flightNotFound(flightNumber));
+    }
+
+    @DeleteMapping("/{flightNumber}/delete")
+    public ResponseEntity<ApiResponse> deleteFlight(@PathVariable String flightNumber){
+        Optional<FlightInfo> toBeDeletedFlight = flightService.searchFlightByFlightNumber(flightNumber);
+        if(toBeDeletedFlight.isPresent()){
+            flightService.deleteFlightByFlightNumber(flightNumber);
+            return ResponseHelper.success("Flight" + flightNumber + "deleted successfully" );
+        }
+        return ResponseHelper.flightNotFound(flightNumber);
     }
 }
