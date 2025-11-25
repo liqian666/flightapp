@@ -4,6 +4,7 @@ import epam.autotesting.flightbooking.model.Baggage;
 import epam.autotesting.flightbooking.model.Passenger;
 import epam.autotesting.flightbooking.repository.BaggageRepository;
 import epam.autotesting.flightbooking.repository.PassengerRepository;
+import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -69,5 +70,13 @@ public class BaggageService {
         return null;
     }
 
+    @Transactional
+    public void deleteBaggageById(Long id) {
+         baggageRepository.deleteById(id);
+    }
 
+    @Transactional
+    public void deleteBaggageByPassenger(Passenger passenger) {
+        baggageRepository.deleteByPassenger(passenger);
+    }
 }

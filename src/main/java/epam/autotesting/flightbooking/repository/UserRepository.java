@@ -12,5 +12,6 @@ public interface UserRepository extends JpaRepository<UserInfo,Integer> {
     public Optional<UserInfo> findByIdentityCardNumber(String userIdNumber);
     public Optional<UserInfo> findByUserId(Integer userId);
     public Optional<UserInfo> findByIdentityCardTypeAndIdentityCardNumber(IDType idType, String idNumber);
+    public int deleteByIdentityCardTypeAndIdentityCardNumber(IDType idType, String idNumber);
 
 }

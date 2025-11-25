@@ -12,4 +12,6 @@ public interface BaggageRepository extends JpaRepository<Baggage, Long> {
     // Find all baggages for a given passenger
     List<Baggage> findByPassenger(Passenger passenger);
 
+    public void deleteByPassenger(Passenger passenger);
+
 }

@@ -10,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Optional;
+
 
 @RestController
 @RequestMapping("api/passenger")
@@ -22,34 +24,24 @@ public class PassengerController {
     private static final Logger logger = LoggerFactory.getLogger(PassengerController.class);
 
     @GetMapping("/name")
-    public ResponseEntity<ApiResponse> findPassenger(@RequestParam String firstName, String lastName) {
-        if(firstName==null || lastName==null) {
-            ResponseHelper.badRequest(ResponseCodes.NOT_ENOUGH_INFORMATION,"firstName or lastName is Empty","firstName:"+firstName+" lastName:"+lastName);
-        }
+    public ResponseEntity<ApiResponse> findPassenger(@RequestParam String firstName,
+                                                     @RequestParam String lastName,
+                                                     @RequestParam String flightNumber) {
 
-        return passengerService.findByFirstNameAndLastName(firstName,lastName)
+        return passengerService.findByFirstNameAndLastNameAndFlightNumber(firstName,lastName,flightNumber)
                 .map(this::getPassengerResponseEntity)
-                .orElseGet(() -> ResponseHelper.badRequest(ResponseCodes.PASSENGER_NOT_FOUND,"Passenger not found", null));
+                .orElseGet(() -> ResponseHelper.passengerNotFound("First: " + firstName + " LastName: " + lastName));
     }
 
     @GetMapping("/passengerIdType")
-    public ResponseEntity<ApiResponse> findUserById(@RequestParam String identityCardType, @RequestParam String identityCardNumber) {
-        if ((identityCardType==null) || (identityCardNumber == null)) {
-            return ResponseHelper.badRequest(ResponseCodes.USER_ID_EMPTY, "User IDType or User IDNumber is empty", "passengerIdType: "+identityCardType+" passengerIdNumber: "+identityCardNumber);
-        }
+    public ResponseEntity<ApiResponse> findPassengerById(@RequestParam IDType identityCardType,
+                                                         @RequestParam String identityCardNumber,
+                                                         @RequestParam String flightNumber) {
 
-        IDType idTypeEnum;
-        try {
-            idTypeEnum = IDType.valueOf(identityCardType.toUpperCase());
-        } catch (IllegalArgumentException e) {
-            return ResponseHelper.badRequest(ResponseCodes.USER_ID_EMPTY, "User IDTYPE should be one fo the following : PASSPORT,\n" +
-                    "    NATIONAL_ID,\n" +
-                    "    DRIVER_LICENSE", "UserIdType: "+identityCardType+" UserIdNumber: "+identityCardNumber);
-        }
-
-        return passengerService.findPassengerByIdTypeAndIdNumber(idTypeEnum, identityCardNumber)
+        return passengerService.findByIdentityCardTypeAndIdentityCardNumberAndFlightNumber(identityCardType, identityCardNumber, flightNumber)
                 .map(this::getPassengerResponseEntity)
-                .orElseGet(() -> ResponseHelper.badRequest(ResponseCodes.PASSENGER_NOT_FOUND, "Passenger not found", "passengerIdType: "+identityCardType+" passengerIdNumber: "+identityCardNumber));
+                .orElseGet(() -> ResponseHelper.passengerNotFound("passengerIdType: "+identityCardType +
+                        " passengerIdNumber: "+identityCardNumber));
     }
 
     @PostMapping("/register")
@@ -57,8 +49,21 @@ public class PassengerController {
         Passenger passenger = getPassenger(passengerRequest);
 
         Passenger savedPassenger = passengerService.savePassenger(passenger);
-        return ResponseHelper.success(ResponseCodes.SUCCESS,"Passenger Registered successfully", savedPassenger);
+        return ResponseHelper.success(savedPassenger);
 
+    }
+
+    @DeleteMapping("/delete")
+    public ResponseEntity<ApiResponse> deletePassenger(@RequestParam String identityCardNumber,
+                                                       @RequestParam String flightNumber) {
+        Optional<Passenger> toBeDeletedPassenger = passengerService.findPassengerBIdentityCardNumberAndFlightNumber(identityCardNumber,flightNumber);
+        if(toBeDeletedPassenger.isPresent()) {
+            toBeDeletedPassenger.ifPresent(passenger -> passengerService.deletePassenger(passenger));
+            return  ResponseHelper.success("Passenger: " + identityCardNumber + " has been deleted");
+        }
+
+        return ResponseHelper.passengerNotFound("passengerIdNumber: "+identityCardNumber +
+                " FlightNumber: "+flightNumber);
     }
 
     private static Passenger getPassenger(PassengerRequest passengerRequest) {

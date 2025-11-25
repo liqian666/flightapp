@@ -1,6 +1,7 @@
 package epam.autotesting.flightbooking.controller;
 
 import epam.autotesting.flightbooking.helper.BaggageType;
+import epam.autotesting.flightbooking.helper.IDType;
 import epam.autotesting.flightbooking.requestsresponses.*;
 import epam.autotesting.flightbooking.model.Baggage;
 import epam.autotesting.flightbooking.model.Passenger;
@@ -31,10 +32,6 @@ public class BaggageController {
                                                    @RequestParam String identityCardNumber,
                                                    @RequestParam String flightNumber) {
 
-        if(identityCardNumber==null){
-            return ResponseHelper.badRequest(ResponseCodes.PASSENGER_NOT_FOUND,"PassengerId is empty",  null);
-        }
-
         Optional<Passenger> passenger = passengerService.findPassengerBIdentityCardNumberAndFlightNumber(identityCardNumber, flightNumber);
         if(passenger.isPresent()){
             List<Baggage> baggageList = new ArrayList();
@@ -63,7 +60,7 @@ public class BaggageController {
 
     }
 
-    @GetMapping("/find/passengerId")
+    @GetMapping("/find")
     public ResponseEntity<ApiResponse> searchByPassengerId(@RequestParam String identityCardNumber,@RequestParam String flightNumber) {
 
         List<Baggage> baggages = baggageService.findBaggageByPassengerIdAndFlightNumber(identityCardNumber,flightNumber);
@@ -79,8 +76,32 @@ public class BaggageController {
             baggageResponse.setBaggageTypeList(baggageTypes);
             return ResponseHelper.success(baggageResponse);
         }
-        logger.info("did not found baggages ");
-        return ResponseHelper.badRequest(ResponseCodes.BAGGAGE_NOT_FOUND, "Passenger doesn't have baggage", identityCardNumber);
+        return ResponseHelper.baggageNotFound("Passenger identity card number : " + identityCardNumber);
 
+    }
+
+    @DeleteMapping("/delete")
+    public ResponseEntity<ApiResponse> deleteBaggages(@RequestParam String identityCardNumber,
+                                                      @RequestParam String flightNumber,
+                                                      @RequestParam BaggageType baggageType) {
+        List<Baggage> baggages = baggageService.findBaggageByPassengerIdAndFlightNumber(identityCardNumber,flightNumber);
+        if (baggages==null) {
+            return ResponseHelper.baggageNotFound("passenger identity card number : " + identityCardNumber +
+            "flight number: " + flightNumber +
+            "baggage type : " + baggageType);
+        }
+        Optional<Baggage> baggageToDelete = baggages.stream()
+                .filter(b -> b.getBaggageType().equals(baggageType))
+                .findFirst();
+
+        baggageToDelete.ifPresent(b -> baggageService.deleteBaggageById(b.getId()));
+
+        BaggageResponse baggageResponse = new BaggageResponse();
+        List<BaggageType> baggageTypes = new ArrayList<>();
+        baggageTypes.add(baggageType);
+        baggageResponse.setIdentityCardNumber(identityCardNumber);
+        baggageResponse.setBaggageTypeList(baggageTypes);
+
+        return ResponseHelper.success(baggageResponse);
     }
 }

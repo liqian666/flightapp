@@ -37,21 +37,25 @@ public class PaymentController
         }
         Payment paidPayment = paymentService.processPaying(paymentRequest);
         if(paidPayment == null) {
-            return ResponseHelper.badRequest(ResponseCodes.BOOKING_NOT_FOUND,
-                    "No Booking found with this booking ID",bookingId);
+            return ResponseHelper.failedToPay( "Booking ID: " + bookingId);
         }
         return ResponseHelper.success(paidPayment);
     }
 
     @GetMapping("/{paymentId}")
     public ResponseEntity<ApiResponse> findByPaymentId(@PathVariable Long paymentId) {
-        if (paymentId == null) {
-            return ResponseHelper.badRequest(ResponseCodes.PAYMENT_ID_EMPTY,
-                    "Payment Id is empty", null);
-        }
-
         return paymentService.findPaymentByPaymentId(paymentId)
                 .map(ResponseHelper::success)
-                .orElseGet(() -> ResponseHelper.badRequest(ResponseCodes.PAYMENT_NOT_FOUND, "Payment not found", paymentId));
+                .orElseGet(() -> ResponseHelper.paymentNotFound(paymentId));
+    }
+
+    @DeleteMapping("/{paymentId}")
+    public ResponseEntity<ApiResponse> deleteByPaymentId(@PathVariable Long paymentId) {
+        Optional<Payment>  toBeDeletedPayment = paymentService.findPaymentByPaymentId(paymentId);
+        if(toBeDeletedPayment.isPresent()) {
+            paymentService.deletePaymentByPaymentId(paymentId);
+            return ResponseHelper.success(toBeDeletedPayment);
+        }
+        return ResponseHelper.paymentNotFound(paymentId);
     }
 }

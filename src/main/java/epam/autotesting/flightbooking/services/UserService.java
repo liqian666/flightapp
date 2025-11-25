@@ -3,6 +3,7 @@ package epam.autotesting.flightbooking.services;
 import epam.autotesting.flightbooking.helper.IDType;
 import epam.autotesting.flightbooking.model.UserInfo;
 import epam.autotesting.flightbooking.repository.UserRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -28,5 +29,10 @@ public class UserService {
 
     public Optional<UserInfo> findUserByUserIdNumber(String userIdNumber) {
         return userRepository.findByIdentityCardNumber(userIdNumber);
+    }
+
+    @Transactional
+    public int deleteUserByIdTypeAndIdNumber(IDType idType, String idNumber) {
+        return userRepository.deleteByIdentityCardTypeAndIdentityCardNumber(idType,idNumber);
     }
 }

@@ -7,6 +7,7 @@ import epam.autotesting.flightbooking.model.Payment;
 import epam.autotesting.flightbooking.repository.BookingRepository;
 import epam.autotesting.flightbooking.repository.PaymentRepository;
 import epam.autotesting.flightbooking.requestsresponses.PaymentRequest;
+import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,5 +54,10 @@ public class PaymentService {
 
     public Optional<Payment> findPaymentByPaymentId(Long paymentId){
        return paymentRepository.findByPaymentId(paymentId);
+    }
+
+    @Transactional
+    public void deletePaymentByPaymentId(Long paymentId){
+        paymentRepository.deleteByPaymentId(paymentId);
     }
 }
