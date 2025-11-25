@@ -8,7 +8,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -44,9 +43,6 @@ public class FlightService {
         return availableFlights;
 
     }
-
-
-
     public Optional<FlightInfo> searchFlightByFlightNumber(String flightNumber) {
         return flightInfoRepository.findByFlightNumber(flightNumber);
     }

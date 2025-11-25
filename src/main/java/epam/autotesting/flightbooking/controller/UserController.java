@@ -5,6 +5,7 @@ import epam.autotesting.flightbooking.model.UserInfo;
 import epam.autotesting.flightbooking.requestsresponses.ApiResponse;
 import epam.autotesting.flightbooking.requestsresponses.ResponseHelper;
 import epam.autotesting.flightbooking.services.UserService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,6 +15,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("api/user")
+@Tag(name = "User Management", description = "Operations related to user")
 public class UserController {
 
     @Autowired

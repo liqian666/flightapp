@@ -6,6 +6,7 @@ import epam.autotesting.flightbooking.model.Booking;
 import epam.autotesting.flightbooking.services.BookingService;
 import epam.autotesting.flightbooking.services.FlightService;
 import epam.autotesting.flightbooking.services.UserService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +19,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/bookings")
+@Tag(name = "Booking Management", description = "Operations related to booking")
 public class BookingController {
 
     @Autowired

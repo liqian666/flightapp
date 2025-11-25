@@ -5,8 +5,8 @@ import epam.autotesting.flightbooking.requestsresponses.ApiResponse;
 import epam.autotesting.flightbooking.requestsresponses.ResponseCodes;
 import epam.autotesting.flightbooking.requestsresponses.ResponseHelper;
 import epam.autotesting.flightbooking.services.FlightService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.expression.spel.ast.FloatLiteral;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,6 +16,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("api/flights")
+@Tag(name = "Flight Management", description = "Operations related to flights")
 public class FlightController {
     @Autowired
     private FlightService flightService;

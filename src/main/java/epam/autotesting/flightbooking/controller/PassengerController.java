@@ -4,6 +4,7 @@ import epam.autotesting.flightbooking.helper.IDType;
 import epam.autotesting.flightbooking.requestsresponses.*;
 import epam.autotesting.flightbooking.model.Passenger;
 import epam.autotesting.flightbooking.services.PassengerService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +16,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("api/passenger")
+@Tag(name = "Passenger Management", description = "Operations related to passenger")
 public class PassengerController {
 
     @Autowired

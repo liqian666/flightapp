@@ -3,16 +3,14 @@ package epam.autotesting.flightbooking.controller;
 import epam.autotesting.flightbooking.model.FlightInfo;
 import epam.autotesting.flightbooking.model.Passenger;
 import epam.autotesting.flightbooking.model.Seat;
-import epam.autotesting.flightbooking.repository.PassengerRepository;
-import epam.autotesting.flightbooking.repository.SeatRepository;
 import epam.autotesting.flightbooking.requestsresponses.ApiResponse;
 import epam.autotesting.flightbooking.requestsresponses.ResponseCodes;
 import epam.autotesting.flightbooking.requestsresponses.ResponseHelper;
 import epam.autotesting.flightbooking.services.FlightService;
 import epam.autotesting.flightbooking.services.PassengerService;
 import epam.autotesting.flightbooking.services.SeatService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.annotation.AliasFor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,6 +19,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("api/seats")
+@Tag(name = "Seat Management", description = "Operations related to seat")
 public class SeatController {
 
     @Autowired

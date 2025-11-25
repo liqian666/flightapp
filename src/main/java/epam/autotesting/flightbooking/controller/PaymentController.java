@@ -1,7 +1,5 @@
 package epam.autotesting.flightbooking.controller;
 
-import epam.autotesting.flightbooking.model.Booking;
-import epam.autotesting.flightbooking.model.Passenger;
 import epam.autotesting.flightbooking.model.Payment;
 import epam.autotesting.flightbooking.requestsresponses.ApiResponse;
 import epam.autotesting.flightbooking.requestsresponses.PaymentRequest;
@@ -10,6 +8,7 @@ import epam.autotesting.flightbooking.requestsresponses.ResponseHelper;
 import epam.autotesting.flightbooking.services.BookingService;
 import epam.autotesting.flightbooking.services.PassengerService;
 import epam.autotesting.flightbooking.services.PaymentService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,6 +17,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/payment")
+@Tag(name = "Payment Management", description = "Operations related to payment")
 public class PaymentController
 {
     @Autowired
